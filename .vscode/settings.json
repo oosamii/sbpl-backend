@@ -1,0 +1,35 @@
+{
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+  
+    "prettier.printWidth": 80,
+    "prettier.singleQuote": true,
+    "prettier.trailingComma": "es5",
+    "prettier.arrowParens": "always",
+    "prettier.endOfLine": "lf",
+    "prettier.semi": false,
+    
+    "eslint.enable": true,
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact"
+    ],
+  
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true,
+      "source.organizeImports": true
+    }
+  }
+  
