@@ -1,11 +1,11 @@
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import express from 'express'
-import mongooseConnection from './mongo.js'
-// import appRoutes from './routes/index.js'
 import dotenv from 'dotenv'
+import express from 'express'
 import fs from 'fs'
 import https from 'https'
+import mongooseConnection from './mongo.js'
+import appRoutes from './routes/index.js'
 dotenv.config()
 
 const port = process.env.PORT || 4000
@@ -32,7 +32,7 @@ app.get('/health', (req, res) => {
   })
 })
 
-// app.use('/api', appRoutes)
+app.use('/api', appRoutes)
 
 if (process.env.DEPLOY_ENV === 'local') {
   app.listen(port, (req, res) => {
