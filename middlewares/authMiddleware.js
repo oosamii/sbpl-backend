@@ -16,6 +16,11 @@ export const protect = asyncHandler(async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
     req.user = await User.findById(decoded.id).select('-password')
+    if (!req.user) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'User not available' })
+    }
     //TODO: Add logic to fetch the Player , Influencer object from here
     next()
   } catch (error) {

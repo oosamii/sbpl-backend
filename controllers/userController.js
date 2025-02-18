@@ -1,8 +1,10 @@
 import asyncHandler from 'express-async-handler'
+import { paginate } from '../manager/finder.js'
 import User from '../schemas/userSchema.js'
 import {
   handleAlreadyExists,
   handleErrorResponse,
+  handleNotFound,
 } from '../utils/responseHandlers.js'
 
 export const createAdminUser = asyncHandler(async (req, res) => {
@@ -66,5 +68,57 @@ export const loginUser = asyncHandler(async (req, res) => {
     })
   } catch (error) {
     return handleErrorResponse(res, error, 'Error during login')
+  }
+})
+
+export const getAllUsers = asyncHandler(async (req, res) => {
+  try {
+    const options = {
+      page: req.query.page,
+      pageSize: req.query.pageSize,
+      sortField: req.query.sortField || 'createdAt',
+      sortOrder: req.query.sortOrder || 'asc',
+    }
+
+    const { documents: users, pagination } = await paginate(User, {}, options)
+    return res.status(200).json({
+      success: true,
+      users,
+      pagination,
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while fetching users')
+  }
+})
+
+export const getUserByToken = asyncHandler(async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      user: req.user,
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
+  }
+})
+
+export const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    const { userId } = req.params
+    if (!userId) return handleNotFound(res, 'User', userId)
+
+    const user = await User.findByIdAndDelete(userId)
+    if (!user) return handleNotFound(res, 'User', userId)
+
+    return res.status(200).json({
+      success: true,
+      msg: 'User deleted successfully',
+      user,
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
   }
 })
