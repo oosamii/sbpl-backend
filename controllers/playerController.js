@@ -71,6 +71,7 @@ export const createPlayer = asyncHandler(async (req, res) => {
       bowlingStyle,
       dateOfRegistration: new Date(),
       influencer: influencerDoc ? influencerDoc._id : null,
+      status: 'PAYMENT_DONE',
     })
 
     return res.status(200).json({
