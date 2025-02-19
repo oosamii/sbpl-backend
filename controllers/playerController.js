@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import { findById, findByUserId, paginate } from '../manager/finder.js'
+import Influencer from '../schemas/influencerSchema.js'
 import Player from '../schemas/playerSchema.js'
 import User from '../schemas/userSchema.js'
 import {
@@ -43,6 +44,7 @@ export const createPlayer = asyncHandler(async (req, res) => {
       prefferedBattingOrder,
       battingStyle,
       bowlingStyle,
+      referralCode,
     } = req.body
 
     let userDoc = await User.findOne({ email })
@@ -63,6 +65,12 @@ export const createPlayer = asyncHandler(async (req, res) => {
     })
 
     console.log('Player User created successfully', userDoc)
+    let influencerDoc = null
+    if (referralCode) {
+      influencerDoc = await Influencer.findOne({ referralCode })
+      influencerDoc.referrals = influencerDoc.referrals + 1
+      await influencerDoc.save()
+    }
 
     const playerDoc = await Player.create({
       user: userDoc._id,
@@ -96,6 +104,7 @@ export const createPlayer = asyncHandler(async (req, res) => {
       battingStyle,
       bowlingStyle,
       dateOfRegistration: new Date(),
+      influencer: influencerDoc ? influencerDoc._id : null,
     })
 
     return res.status(200).json({

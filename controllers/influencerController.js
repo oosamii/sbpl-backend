@@ -9,7 +9,16 @@ import {
 
 export const createInfluencer = asyncHandler(async (req, res) => {
   try {
-    const { email, phone, password, username } = req.body
+    const {
+      email,
+      phone,
+      password,
+      username,
+      instagramId,
+      referralCode,
+      city,
+      state,
+    } = req.body
 
     let userDoc = await User.findOne({ email })
     if (userDoc) {
@@ -19,6 +28,11 @@ export const createInfluencer = asyncHandler(async (req, res) => {
     userDoc = await User.findOne({ phone })
     if (userDoc) {
       return handleAlreadyExists(res, 'User', phone)
+    }
+
+    let influencerDoc = await Influencer.findOne({ referralCode })
+    if (influencerDoc) {
+      return handleAlreadyExists(res, 'Influencer', referralCode)
     }
 
     userDoc = await User.create({
@@ -31,10 +45,13 @@ export const createInfluencer = asyncHandler(async (req, res) => {
 
     console.log('Influencer User created successfully', userDoc)
 
-    // Fix: Corrected reference to `influencer`
-    const influencerDoc = await influencer.create({
+    influencerDoc = await Influencer.create({
       user: userDoc._id,
       referrals: 0,
+      instagramId,
+      referralCode,
+      city,
+      state,
     })
 
     return res.status(200).json({
@@ -52,30 +69,30 @@ export const createInfluencer = asyncHandler(async (req, res) => {
   }
 })
 
-// export const getInfluencerById = asyncHandler(async (req, res) => {
-//   try {
-//     const { influencerId } = req.params
-//     const influencer = await findById(
-//       Influencer,
-//       influencerId,
-//       ['user'],
-//       'Influencer',
-//       res
-//     )
+export const getInfluencerById = asyncHandler(async (req, res) => {
+  try {
+    const { influencerId } = req.params
+    const influencer = await findById(
+      Influencer,
+      influencerId,
+      ['user'],
+      'Influencer',
+      res
+    )
 
-//     if (!influencer) {
-//       return handleNotFound(res, 'Influencer', influencerId)
-//     }
+    if (!influencer) {
+      return handleNotFound(res, 'Influencer', influencerId)
+    }
 
-//     return res.status(200).json({
-//       success: true,
-//       influencer,
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     return handleErrorResponse(res, error)
-//   }
-// })
+    return res.status(200).json({
+      success: true,
+      influencer,
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
+  }
+})
 
 export const getAllInfluencers = asyncHandler(async (req, res) => {
   try {
@@ -86,8 +103,6 @@ export const getAllInfluencers = asyncHandler(async (req, res) => {
       sortOrder: req.query.sortOrder || 'asc',
       populateFields: ['user'],
     }
-
-    // Ensure influencers is defined before use
     const { documents: influencers, pagination } = await paginate(
       Influencer,
       {},
