@@ -139,3 +139,49 @@ export const getInfluencerByUser = asyncHandler(async (req, res) => {
     handleErrorResponse(res, error)
   }
 })
+
+export const getTotalCountOfInfluencer = asyncHandler(async (req, res) => {
+  try {
+    const totalCount = await Influencer.countDocuments()
+    res.status(200).json({ totalCount })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
+  }
+})
+
+// Get total referrals from all influencers
+export const getTotalReferrals = asyncHandler(async (req, res) => {
+  try {
+    const totalReferrals = await Influencer.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalReferrals: { $sum: '$referrals' },
+        },
+      },
+    ])
+
+    res
+      .status(200)
+      .json({ totalReferrals: totalReferrals[0]?.totalReferrals || 0 })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
+  }
+})
+
+// Get top K influencers sorted by referrals
+export const getTopKInfluencer = asyncHandler(async (req, res) => {
+  try {
+    const { k } = req.query
+    const topInfluencers = await Influencer.find()
+      .sort({ referrals: -1 })
+      .limit(Number(k))
+
+    res.status(200).json({ topInfluencers })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
+  }
+})
