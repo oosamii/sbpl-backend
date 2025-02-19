@@ -16,7 +16,7 @@ const playerSchema = mongoose.Schema(
     trialZone: reqString,
     address: String,
     state: reqString,
-    city: reqString,
+    city: String,
     locality: String,
     pincode: String,
     landmark: String,
