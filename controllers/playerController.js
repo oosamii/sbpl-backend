@@ -165,3 +165,84 @@ export const getPlayerRegistrationsCount = asyncHandler(async (req, res) => {
     })
   }
 })
+
+export const continuePlayerRegistration = asyncHandler(async (req, res) => {
+  try {
+    const {
+      playerId,
+      address,
+      state,
+      city,
+      pincode,
+      locality,
+      landmark,
+      currentAddress,
+      currentState,
+      currentCity,
+      currentPincode,
+      currentLocality,
+      currentLandmark,
+      aadhaarNumber,
+      emergencyContact,
+      instagramId,
+      facebookId,
+      playingRole,
+      battingStyle,
+      bowlingStyle,
+      prefferedBattingOrder,
+      trouserSize,
+      tshirtSize,
+      shoeSize,
+      bloodGroup,
+      aadhaarImage,
+      profileImage,
+    } = req.body
+
+    let playerDoc = await findById(Player, playerId, ['user'], 'Player', res)
+    if (!playerDoc) {
+      return handleNotFound(res, 'Player', playerId)
+    }
+
+    let userDoc = playerDoc.user
+    userDoc.profilePic = profileImage
+    await userDoc.save()
+
+    playerDoc.address = address
+    playerDoc.state = state
+    playerDoc.city = city
+    playerDoc.pincode = pincode
+    playerDoc.locality = locality
+    playerDoc.landmark = landmark
+    playerDoc.currentAddress = currentAddress
+    playerDoc.currentState = currentState
+    playerDoc.currentCity = currentCity
+    playerDoc.currentPincode = currentPincode
+    playerDoc.currentLocality = currentLocality
+    playerDoc.currentLandmark = currentLandmark
+    playerDoc.aadhaarNumber = aadhaarNumber
+    playerDoc.emergencyContact = emergencyContact
+    playerDoc.instagramId = instagramId
+    playerDoc.facebookId = facebookId
+    playerDoc.playingRole = playingRole
+    playerDoc.battingStyle = battingStyle
+    playerDoc.bowlingStyle = bowlingStyle
+    playerDoc.prefferedBattingOrder = prefferedBattingOrder
+    playerDoc.trouserSize = trouserSize
+    playerDoc.tshirtSize = tshirtSize
+    playerDoc.shoeSize = shoeSize
+    playerDoc.bloodGroup = bloodGroup
+    playerDoc.aadhaarImage = aadhaarImage
+    playerDoc.status = 'DETAILS_FILLED'
+
+    playerDoc = await playerDoc.save()
+
+    return res.status(200).json({
+      success: true,
+      playerDoc,
+      msg: 'Player Updated',
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
+  }
+})
