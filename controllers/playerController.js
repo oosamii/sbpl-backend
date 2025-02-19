@@ -171,3 +171,21 @@ export const getAllPlayers = asyncHandler(async (req, res) => {
     return handleErrorResponse(res, error, 'Error while fetching Players')
   }
 })
+
+export const getPlayerRegistrationsCount = asyncHandler(async (req, res) => {
+  try {
+    const totalRegistrations = await Player.countDocuments()
+
+    return res.status(200).json({
+      success: true,
+      totalRegistrations,
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching player registrations count',
+      error: error.message,
+    })
+  }
+})

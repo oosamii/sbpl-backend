@@ -52,6 +52,7 @@ const playerSchema = mongoose.Schema(
       type: Date,
       required: true,
     },
+    numberOfRegistrations: Number,
     status: {
       type: String,
       enum: ['INITIATED', 'DETAILS_FILLED', 'REGISTERED'],
