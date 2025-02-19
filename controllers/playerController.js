@@ -50,8 +50,10 @@ export const createPlayer = asyncHandler(async (req, res) => {
     let influencerDoc = null
     if (referralCode) {
       influencerDoc = await Influencer.findOne({ referralCode })
-      influencerDoc.referrals = influencerDoc.referrals + 1
-      await influencerDoc.save()
+      if (influencerDoc) {
+        influencerDoc.referrals = influencerDoc.referrals + 1
+        await influencerDoc.save()
+      }
     }
 
     const playerDoc = await Player.create({
