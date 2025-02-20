@@ -6,6 +6,7 @@ import {
   handleAlreadyExists,
   handleErrorResponse,
 } from '../utils/responseHandlers.js'
+import { parse } from 'json2csv'
 
 export const createInfluencer = asyncHandler(async (req, res) => {
   try {
@@ -217,3 +218,50 @@ export const searchInfluencers = async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 }
+
+export const getInfluencersReportCSV = asyncHandler(async (req, res) => {
+  try {
+    const influencers = await Influencer.find({}).populate("user");
+
+    if (influencers.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No influencers found.",
+      });
+    }
+
+    const csvData = influencers.map((influencer) => ({
+      influencerId: influencer._id,
+      userId: influencer.user ? influencer.user._id : "N/A", 
+      referrals: influencer.referrals,
+      referralCode: influencer.referralCode,
+      instagramId: influencer.instagramId || "N/A",
+      city: influencer.city || "N/A",
+      state: influencer.state || "N/A",
+      dateOfRegistration: influencer.createdAt, 
+      updatedAt: influencer.updatedAt,
+    }));
+
+    const csv = parse(csvData, {
+      fields: [
+        "influencerId",
+        "userId",
+        "referrals",
+        "referralCode",
+        "instagramId",
+        "city",
+        "state",
+        "dateOfRegistration",
+        "updatedAt",
+      ],
+    });
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment('influencersReport.csv');
+
+    return res.send(csv);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ success: false, error });
+  }
+});

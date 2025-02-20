@@ -3,6 +3,7 @@ import {
   createInfluencer,
   getAllInfluencers,
   getInfluencerByUser,
+  getInfluencersReportCSV,
   getTopKInfluencer,
   getTotalCountOfInfluencer,
   getTotalReferrals,
@@ -19,4 +20,5 @@ influencerRouter.route('/getTotalCount').get(getTotalCountOfInfluencer)
 influencerRouter.route('/getTopKInfluencer').get(getTopKInfluencer)
 influencerRouter.route('/getTotalReferrals').get(getTotalReferrals)
 influencerRouter.route('/searchInfluencers').get(searchInfluencers)
+influencerRouter.route('/downloadInfluencersCsv').get(getInfluencersReportCSV);
 export default influencerRouter
