@@ -40,16 +40,11 @@ const playerSchema = mongoose.Schema(
       enum: ['BATSMAN', 'BOWLER', 'ALL-ROUNDER'],
       required: true,
     },
-    prefferedBattingOrder: reqString,
-    battingStyle: {
-      type: String,
-      enum: ['RIGHT-HANDED', 'LEFT-HANDED'],
-      required: true,
-    },
-    bowlingStyle: {
-      type: String,
-      enum: ['SEAM', 'SPIN', 'N/A'],
-    },
+    prefferedBattingOrder: String,
+    battingStyle: String,
+    bowlingStyle: String,
+    battingHandedness: String,
+    bowlingHandedness: String,
     dateOfRegistration: {
       type: Date,
       required: true,
