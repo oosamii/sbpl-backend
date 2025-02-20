@@ -6,6 +6,8 @@ import {
   getPlayerById,
   getPlayerByUser,
   getPlayerRegistrationsCount,
+  getPlayersByState,
+  searchPlayers,
 } from '../controllers/playerController.js'
 
 const playerRouter = express.Router()
@@ -16,5 +18,7 @@ playerRouter.route('/getAll').get(getAllPlayers)
 playerRouter.route('/getById/:playerId').get(getPlayerById)
 playerRouter.route('/getCountOfRegistrations').get(getPlayerRegistrationsCount)
 playerRouter.route('/continueRegistration').post(continuePlayerRegistration)
+playerRouter.route('/getByState/:state').get(getPlayersByState)
+playerRouter.route('/searchPlayers').get(searchPlayers)
 
 export default playerRouter

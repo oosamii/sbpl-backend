@@ -185,3 +185,34 @@ export const getTopKInfluencer = asyncHandler(async (req, res) => {
     return handleErrorResponse(res, error)
   }
 })
+
+export const searchInfluencers = async (req, res) => {
+  try {
+    const { query, page = 1, limit = 10 } = req.query
+
+    if (!query) {
+      return res.status(400).json({ message: 'Query parameter is required' })
+    }
+
+    const searchRegex = new RegExp(query, 'i') // Case-insensitive search
+
+    const influencers = await Influencer.find({
+      $or: [
+        { referralCode: searchRegex },
+        { instagramId: searchRegex },
+        { city: searchRegex },
+        { state: searchRegex },
+      ],
+    })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+
+    if (influencers.length === 0) {
+      return res.status(404).json({ message: 'No influencers found' })
+    }
+
+    res.json({ count: influencers.length, influencers })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}

@@ -246,3 +246,67 @@ export const continuePlayerRegistration = asyncHandler(async (req, res) => {
     return handleErrorResponse(res, error)
   }
 })
+
+export const getPlayersByState = async (req, res) => {
+  try {
+    const { state } = req.params
+    console.log('State param received:', state)
+
+    if (!state) {
+      return res.status(400).json({ message: 'State parameter is required' })
+    }
+
+    const players = await Player.find()
+    console.log('Existing players:', players)
+    const filteredPlayers = await Player.find({
+      state: new RegExp(`^${state}$`, 'i'),
+    })
+    console.log('Filtered Players:', filteredPlayers)
+
+    if (!filteredPlayers.length) {
+      return res
+        .status(404)
+        .json({ message: 'No players found for this state' })
+    }
+
+    res.status(200).json(filteredPlayers)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Server error' })
+  }
+}
+
+export const searchPlayers = async (req, res) => {
+  try {
+    const { query } = req.query
+
+    if (!query) {
+      return res.status(400).json({ message: 'Query parameter is required' })
+    }
+
+    // Case-insensitive search across multiple fields
+    const searchQuery = new RegExp(query, 'i')
+
+    const players = await Player.find({
+      $or: [
+        { firstName: searchQuery },
+        { lastName: searchQuery },
+        { middleName: searchQuery },
+        { state: searchQuery },
+        { city: searchQuery },
+        { playingRole: searchQuery },
+        { battingStyle: searchQuery },
+        { bowlingStyle: searchQuery },
+      ],
+    })
+
+    if (!players.length) {
+      return res.status(404).json({ message: 'No players found' })
+    }
+
+    res.status(200).json(players)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Server error' })
+  }
+}
