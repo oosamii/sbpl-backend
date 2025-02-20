@@ -275,7 +275,6 @@ export const getPlayersByState = async (req, res) => {
     res.status(500).json({ message: 'Server error' })
   }
 }
-
 export const searchPlayers = async (req, res) => {
   try {
     const { query } = req.query
@@ -294,6 +293,8 @@ export const searchPlayers = async (req, res) => {
         { middleName: searchQuery },
         { state: searchQuery },
         { city: searchQuery },
+        { trialCity: searchQuery }, // Added trialCity
+        { trialZone: searchQuery }, // Added trialZone
         { playingRole: searchQuery },
         { battingStyle: searchQuery },
         { bowlingStyle: searchQuery },
@@ -310,3 +311,5 @@ export const searchPlayers = async (req, res) => {
     res.status(500).json({ message: 'Server error' })
   }
 }
+
+
