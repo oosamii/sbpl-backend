@@ -178,6 +178,7 @@ export const getTopKInfluencer = asyncHandler(async (req, res) => {
     const topInfluencers = await Influencer.find()
       .sort({ referrals: -1 })
       .limit(Number(k))
+      .populate('user', 'name') 
 
     res.status(200).json({ topInfluencers })
   } catch (error) {
