@@ -1,4 +1,4 @@
-import express from "express"
+import express from 'express'
 import {
   continuePlayerRegistration,
   createPlayer,
@@ -8,19 +8,21 @@ import {
   getPlayerRegistrationsCount,
   getPlayersByState,
   getPlayersReportCSV,
+  recentRegisteration,
   searchPlayers,
-} from "../controllers/playerController.js"
+} from '../controllers/playerController.js'
 
-const playerRouter = express.Router();
+const playerRouter = express.Router()
 
-playerRouter.route("/register").post(createPlayer)
-playerRouter.route("/getByUser/:userId").get(getPlayerByUser)
-playerRouter.route("/getAll").get(getAllPlayers)
-playerRouter.route("/getById/:playerId").get(getPlayerById)
-playerRouter.route("/getCountOfRegistrations").get(getPlayerRegistrationsCount)
-playerRouter.route("/continueRegistration").post(continuePlayerRegistration)
-playerRouter.route("/getByState/:state").get(getPlayersByState)
-playerRouter.route("/searchPlayers").get(searchPlayers)
-playerRouter.route("/downloadPlayersCsv").get(getPlayersReportCSV);
+playerRouter.route('/register').post(createPlayer)
+playerRouter.route('/getByUser/:userId').get(getPlayerByUser)
+playerRouter.route('/getAll').get(getAllPlayers)
+playerRouter.route('/getById/:playerId').get(getPlayerById)
+playerRouter.route('/getCountOfRegistrations').get(getPlayerRegistrationsCount)
+playerRouter.route('/continueRegistration').post(continuePlayerRegistration)
+playerRouter.route('/getByState/:state').get(getPlayersByState)
+playerRouter.route('/searchPlayers').get(searchPlayers)
+playerRouter.route('/downloadPlayersCsv').get(getPlayersReportCSV)
+playerRouter.route('/recent').get(recentRegisteration)
 
-export default playerRouter;
+export default playerRouter

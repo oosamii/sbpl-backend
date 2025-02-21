@@ -426,3 +426,23 @@ export const getPlayersReportCSV = asyncHandler(async (req, res) => {
     return res.status(500).json({ success: false, error })
   }
 })
+
+export const recentRegisteration = asyncHandler(async (req, res) => {
+  try {
+    const { limit = 10 } = req.query
+
+    const recentPlayers = await Player.find()
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+    return res.status(200).json({
+      success: true,
+      data: recentPlayers,
+    })
+  } catch (error) {
+    console.error('Error fetching recent registrations:', error)
+    return res.status(500).json({
+      success: false,
+      message: 'Error while fetching recent registrations',
+    })
+  }
+})
