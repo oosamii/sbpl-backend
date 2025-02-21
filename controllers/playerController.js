@@ -4,6 +4,7 @@ import { findById, findByUserId, paginate } from '../manager/finder.js'
 import Influencer from '../schemas/influencerSchema.js'
 import Player from '../schemas/playerSchema.js'
 import User from '../schemas/userSchema.js'
+import { sendEmail } from '../utils/emailSender.js'
 import {
   handleAlreadyExists,
   handleErrorResponse,
@@ -80,6 +81,119 @@ export const createPlayer = asyncHandler(async (req, res) => {
       influencer: influencerDoc ? influencerDoc._id : null,
       status: 'PAYMENT_DONE',
     })
+
+    //send email to player Payment recieved, Registration successfull.
+    sendEmail(
+      userDoc?.email,
+      'Payment Recieved',
+      `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Notification</title>
+        </head>
+        <body>
+          <div
+            style="
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+              background-color: #f9f9f9;
+              border-radius: 10px;
+              font-family: Arial, sans-serif;
+              color: #333;
+            "
+          >
+            <div
+              style="
+                text-align: center;
+                padding: 20px;
+                background-color: #28a745;
+                border-radius: 10px 10px 0 0;
+              "
+            >
+              <h1 style="color: white; margin: 0">Notification</h1>
+            </div>
+            <div
+              style="
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.8);
+                backdrop-filter: blur(5px);
+                border-radius: 0 0 10px 10px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+              "
+            >
+              <p style="margin: 0 0 15px">Dear User,</p>
+              <p style="margin: 0 0 15px">Your payment has been successfully received.</p>
+              <p style="margin: 0 0 15px">Your player profile has been created.</p>
+
+              <div
+                style="
+                  margin: 20px 0;
+                  font-size: 18px;
+                  font-weight: bold;
+                  text-align: center;
+                  padding: 10px;
+                  border-radius: 10px;
+                  background: linear-gradient(90deg, #28a745, #218838);
+                  color: white;
+                "
+              >
+                Please complete your profile details to participate.
+              </div>
+
+              <p style="margin: 0 0 15px">
+                Click the button below to update your profile:
+              </p>
+
+              <div style="text-align: center; margin: 20px 0">
+                <a
+                  href="https://sbpl-tc.com/continueRegistration"
+                  style="
+                    display: inline-block;
+                    padding: 12px 24px;
+                    font-size: 16px;
+                    color: white;
+                    background-color: #007bff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                  "
+                  >Complete Profile</a
+                >
+              </div>
+
+              <p style="margin: 0 0 15px">If you have any questions, feel free to contact support.</p>
+            </div>
+            <div
+              style="
+                text-align: center;
+                margin-top: 10px;
+                padding: 15px;
+                background-color: #f0f0f0;
+                border-radius: 10px;
+              "
+            >
+              <p style="margin: 0">Thank you for choosing our service!</p>
+              <p style="margin: 0; margin-top: 5px; font-size: 12px; color: #777">
+                &copy; 2025
+                <a style="text-decoration: none" href="https://sbpl-tc.com/"
+                  >South Bharath Premier League</a
+                >
+                powered by
+                <a
+                  style="text-decoration: none"
+                  href="https://www.orbittechnologys.com/"
+                  >Orbit Technologys</a
+                >
+                . All rights reserved.
+              </p>
+            </div>
+          </div>
+        </body>
+      </html>`
+    )
 
     return res.status(200).json({
       success: true,
@@ -246,6 +360,108 @@ export const continuePlayerRegistration = asyncHandler(async (req, res) => {
     playerDoc.status = 'DETAILS_FILLED'
 
     playerDoc = await playerDoc.save()
+
+    //send email to player, Registration successfull. SBPL<last 6 digits of player ID>
+    sendEmail(
+      userDoc?.email,
+      'Payment Recieved',
+      `
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Player Registration</title>
+              </head>
+              <body>
+                <div
+                  style="
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #f9f9f9;
+                    border-radius: 10px;
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                  "
+                >
+                  <div
+                    style="
+                      text-align: center;
+                      padding: 20px;
+                      background-color: #ffcc00;
+                      border-radius: 10px 10px 0 0;
+                    "
+                  >
+                    <h1 style="color: #333; margin: 0">Congratulations!</h1>
+                  </div>
+                  <div
+                    style="
+                      padding: 20px;
+                      background: rgba(255, 255, 255, 0.8);
+                      backdrop-filter: blur(5px);
+                      border-radius: 0 0 10px 10px;
+                      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                      text-align: center;
+                    "
+                  >
+                    <p style="margin: 0 0 15px">Dear Player,</p>
+                    <p style="margin: 0 0 15px">You have successfully registered!</p>
+
+                    <div
+                      style="
+                        margin: 20px 0;
+                        font-size: 24px;
+                        font-weight: bold;
+                        text-align: center;
+                        padding: 15px;
+                        border-radius: 10px;
+                        background: #333;
+                        color: #ffcc00;
+                        display: inline-block;
+                        letter-spacing: 3px;
+                      "
+                    >
+                      SBPL${playerDoc?._id?.slice(-6)}
+                    </div>
+
+                    <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
+                    <p style="margin: 0 0 15px;">
+                      Share your golden ticket on social media for more visibility of your profile.
+                    </p>
+                    <p style="margin: 0 0 15px;">
+                      Before getting a chance to become a pro, let the world know! :')
+                    </p>
+                  </div>
+                  <div
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      padding: 15px;
+                      background-color: #f0f0f0;
+                      border-radius: 10px;
+                    "
+                  >
+                    <p style="margin: 0">Thank you for being part of SBPL!</p>
+                    <p style="margin: 0; margin-top: 5px; font-size: 12px; color: #777">
+                      &copy; 2025
+                      <a style="text-decoration: none" href="https://sbpl-tc.com/"
+                        >South Bharath Premier League</a
+                      >
+                      powered by
+                      <a
+                        style="text-decoration: none"
+                        href="https://www.orbittechnologys.com/"
+                        >Orbit Technologys</a
+                      >
+                      . All rights reserved.
+                    </p>
+                  </div>
+                </div>
+              </body>
+            </html>
+            `
+    )
 
     return res.status(200).json({
       success: true,
