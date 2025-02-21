@@ -2,10 +2,9 @@ import express from 'express'
 import {
   createAdminUser,
   deleteUser,
-  forgotPassword,
+  // forgotPassword,
   getAllUsers,
-  getUserByToken,
-  resetPassword,
+  getUserByToken
 } from '../controllers/userController.js'
 import { authorize, protect } from '../middlewares/authMiddleware.js'
 
@@ -21,7 +20,7 @@ userRouter
 userRouter.get('/admin-only', protect, authorize('ADMIN'), (req, res) => {
   res.status(200).json({ success: true, message: 'Welcome Admin!' })
 })
-userRouter.route('/forgotPassword').post(forgotPassword)
-userRouter.route('/resetPassword').post(resetPassword)
+// userRouter.route('/forgotPassword').post(forgotPassword)
+// userRouter.route('/resetPassword').post(resetPassword)
 
 export default userRouter
