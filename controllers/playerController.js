@@ -362,7 +362,7 @@ export const continuePlayerRegistration = asyncHandler(async (req, res) => {
     playerDoc = await playerDoc.save()
 
     //send email to player, Registration successfull. SBPL<last 6 digits of player ID>
-    sendEmail(
+    await sendEmail(
       userDoc?.email,
       'Payment Recieved',
       `
