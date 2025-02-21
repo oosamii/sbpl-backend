@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs'
 import asyncHandler from 'express-async-handler'
 import { paginate } from '../manager/finder.js'
 import User from '../schemas/userSchema.js'
@@ -403,8 +402,9 @@ export const resetPassword = asyncHandler(async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' })
     }
 
-    const salt = await bcrypt.genSalt(10)
-    user.password = await bcrypt.hash(newPassword, salt)
+    // const salt = await bcrypt.genSalt(10)
+    // user.password = await bcrypt.hash(newPassword, salt)
+    user.password = newPassword;
     await user.save()
 
     return res.status(200).json({ success: true, message: 'Password reset successfully' })
