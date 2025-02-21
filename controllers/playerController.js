@@ -422,7 +422,7 @@ export const continuePlayerRegistration = asyncHandler(async (req, res) => {
                         letter-spacing: 3px;
                       "
                     >
-                      SBPL${playerDoc?._id?.slice(-6)}
+                      SBPL${playerDoc?._id?.toString()?.slice(-6)}
                     </div>
 
                     <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
