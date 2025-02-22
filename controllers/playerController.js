@@ -487,9 +487,12 @@ export const getPlayersByState = async (req, res) => {
       return res.status(400).json({ message: 'State parameter is required' })
     }
 
+      const sort = {}
+      sort['createdAt'] = -1
+
     const filteredPlayers = await Player.find({
       state: new RegExp(`^${state}$`, 'i'),
-    })
+    }).sort(sort).exec()
     console.log('Filtered Players:', filteredPlayers)
 
     if (!filteredPlayers.length) {
