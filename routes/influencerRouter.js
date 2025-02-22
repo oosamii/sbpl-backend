@@ -1,6 +1,7 @@
 import express from 'express'
 import {
   createInfluencer,
+  deleteInfluencer,
   getAllInfluencers,
   getInfluencerByUser,
   getInfluencersReportCSV,
@@ -23,4 +24,5 @@ influencerRouter.route('/getTotalReferrals').get(getTotalReferrals)
 influencerRouter.route('/searchInfluencers').get(searchInfluencers)
 influencerRouter.route('/downloadInfluencersCsv').get(getInfluencersReportCSV)
 influencerRouter.route('/update/:influencerId').post(updateInfluencer)
+influencerRouter.route('/delete/:influencerId').delete(deleteInfluencer)
 export default influencerRouter

@@ -268,10 +268,9 @@ export const getInfluencersReportCSV = asyncHandler(async (req, res) => {
 
 export const updateInfluencer = asyncHandler(async (req, res) => {
   try {
-    const { influencerId } = req.params // Ensure this matches the route definition
+    const { influencerId } = req.params
     const { instagramId, referralCode, city, state } = req.body
 
-    // Check if influencer exists
     let influencerDoc = await Influencer.findById(influencerId).populate('user')
     if (!influencerDoc) {
       return res
@@ -279,7 +278,6 @@ export const updateInfluencer = asyncHandler(async (req, res) => {
         .json({ success: false, msg: 'Influencer profile not found' })
     }
 
-    // Check if the associated user exists
     let userDoc = await User.findById(influencerDoc.user._id)
     if (!userDoc) {
       return res
@@ -287,7 +285,6 @@ export const updateInfluencer = asyncHandler(async (req, res) => {
         .json({ success: false, msg: 'Associated user not found' })
     }
 
-    // Check if referral code is unique (if updated)
     if (referralCode && referralCode !== influencerDoc.referralCode) {
       let existingInfluencer = await Influencer.findOne({ referralCode })
       if (existingInfluencer) {
@@ -295,7 +292,6 @@ export const updateInfluencer = asyncHandler(async (req, res) => {
       }
     }
 
-    // Update influencer data
     influencerDoc.instagramId = instagramId || influencerDoc.instagramId
     influencerDoc.referralCode = referralCode || influencerDoc.referralCode
     influencerDoc.city = city || influencerDoc.city
@@ -311,5 +307,30 @@ export const updateInfluencer = asyncHandler(async (req, res) => {
   } catch (error) {
     console.log(error)
     return handleErrorResponse(res, error, 'Error while updating Influencer')
+  }
+})
+
+export const deleteInfluencer = asyncHandler(async (req, res) => {
+  try {
+    const { influencerId } = req.params
+
+    const influencerDoc = await Influencer.findById(influencerId)
+    if (!influencerDoc) {
+      return res
+        .status(404)
+        .json({ success: false, msg: 'Influencer not found' })
+    }
+
+    await User.findByIdAndDelete(influencerDoc.user)
+
+    await Influencer.findByIdAndDelete(influencerId)
+
+    return res.status(200).json({
+      success: true,
+      msg: 'Influencer and associated user deleted successfully',
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while deleting Influencer')
   }
 })
