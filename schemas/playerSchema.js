@@ -65,6 +65,7 @@ const playerSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'influencers',
     },
+    paymentId: String,
   },
   {
     timestamps: true,

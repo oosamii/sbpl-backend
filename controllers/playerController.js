@@ -32,6 +32,7 @@ export const createPlayer = asyncHandler(async (req, res) => {
       bowlingStyle,
       bowlingHandedness,
       referralCode,
+      paymentId,
     } = req.body
 
     let userDoc = await User.findOne({ email })
@@ -81,119 +82,110 @@ export const createPlayer = asyncHandler(async (req, res) => {
       influencer: influencerDoc ? influencerDoc._id : null,
       status: 'PAYMENT_DONE',
       referralCode,
+      paymentId,
     })
 
     //send email to player Payment recieved, Registration successfull.
     sendEmail(
       userDoc?.email,
       'Payment Recieved',
-      `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Notification</title>
-        </head>
-        <body>
-          <div
-            style="
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 20px;
-              background-color: #f9f9f9;
-              border-radius: 10px;
-              font-family: Arial, sans-serif;
-              color: #333;
-            "
-          >
-            <div
-              style="
-                text-align: center;
-                padding: 20px;
-                background-color: #28a745;
-                border-radius: 10px 10px 0 0;
-              "
-            >
-              <h1 style="color: white; margin: 0">Notification</h1>
-            </div>
-            <div
-              style="
-                padding: 20px;
-                background: rgba(255, 255, 255, 0.8);
-                backdrop-filter: blur(5px);
-                border-radius: 0 0 10px 10px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-              "
-            >
-              <p style="margin: 0 0 15px">Dear User,</p>
-              <p style="margin: 0 0 15px">Your payment has been successfully received.</p>
-              <p style="margin: 0 0 15px">Your player profile has been created.</p>
-
-              <div
-                style="
-                  margin: 20px 0;
-                  font-size: 18px;
-                  font-weight: bold;
-                  text-align: center;
-                  padding: 10px;
-                  border-radius: 10px;
-                  background: linear-gradient(90deg, #28a745, #218838);
-                  color: white;
-                "
-              >
-                Please complete your profile details to participate.
-              </div>
-
-              <p style="margin: 0 0 15px">
-                Click the button below to update your profile:
-              </p>
-
-              <div style="text-align: center; margin: 20px 0">
-                <a
-                  href="https://sbpl-tc.com/continueRegistration"
+      `<!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Player Registration</title>
+              </head>
+              <body>
+                <div
                   style="
-                    display: inline-block;
-                    padding: 12px 24px;
-                    font-size: 16px;
-                    color: white;
-                    background-color: #007bff;
-                    text-decoration: none;
-                    border-radius: 5px;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #f9f9f9;
+                    border-radius: 10px;
+                    font-family: Arial, sans-serif;
+                    color: #333;
                   "
-                  >Complete Profile</a
                 >
-              </div>
+                  <div
+                    style="
+                      text-align: center;
+                      padding: 20px;
+                      background-color: #ffcc00;
+                      border-radius: 10px 10px 0 0;
+                    "
+                  >
+                    <h1 style="color: #333; margin: 0">Congratulations!</h1>
+                  </div>
+                  <div
+                    style="
+                      padding: 20px;
+                      background: rgba(255, 255, 255, 0.8);
+                      backdrop-filter: blur(5px);
+                      border-radius: 0 0 10px 10px;
+                      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                      text-align: center;
+                    "
+                  >
+                    <p style="margin: 0 0 15px">Dear Player,</p>
+                    <p style="margin: 0 0 15px">You have successfully registered!</p>
 
-              <p style="margin: 0 0 15px">If you have any questions, feel free to contact support.</p>
-            </div>
-            <div
-              style="
-                text-align: center;
-                margin-top: 10px;
-                padding: 15px;
-                background-color: #f0f0f0;
-                border-radius: 10px;
-              "
-            >
-              <p style="margin: 0">Thank you for choosing our service!</p>
-              <p style="margin: 0; margin-top: 5px; font-size: 12px; color: #777">
-                &copy; 2025
-                <a style="text-decoration: none" href="https://sbpl-tc.com/"
-                  >South Bharath Premier League</a
-                >
-                powered by
-                <a
-                  style="text-decoration: none"
-                  href="https://www.orbittechnologys.com/"
-                  >Orbit Technologys</a
-                >
-                . All rights reserved.
-              </p>
-            </div>
-          </div>
-        </body>
-      </html>`
+                    <div
+                      style="
+                        margin: 20px 0;
+                        font-size: 24px;
+                        font-weight: bold;
+                        text-align: center;
+                        padding: 15px;
+                        border-radius: 10px;
+                        background: #333;
+                        color: #ffcc00;
+                        display: inline-block;
+                        letter-spacing: 3px;
+                      "
+                    >
+                      SBPL${playerDoc?._id
+                        ?.toString()
+                        ?.slice(-6)
+                        ?.toUpperCase()}
+                    </div>
+
+                    <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
+                    <p style="margin: 0 0 15px;">
+                      Share your golden ticket on social media for more visibility of your profile.
+                    </p>
+                    <p style="margin: 0 0 15px;">
+                      Before getting a chance to become a pro, let the world know! :')
+                    </p>
+                  </div>
+                  <div
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      padding: 15px;
+                      background-color: #f0f0f0;
+                      border-radius: 10px;
+                    "
+                  >
+                    <p style="margin: 0">Thank you for being part of SBPL!</p>
+                    <p style="margin: 0; margin-top: 5px; font-size: 12px; color: #777">
+                      &copy; 2025
+                      <a style="text-decoration: none" href="https://sbpl-tc.com/"
+                        >South Bharath Premier League</a
+                      >
+                      powered by
+                      <a
+                        style="text-decoration: none"
+                        href="https://www.orbittechnologys.com/"
+                        >Orbit Technologys</a
+                      >
+                      . All rights reserved.
+                    </p>
+                  </div>
+                </div>
+              </body>
+            </html>`
     )
 
     return res.status(200).json({
@@ -487,12 +479,14 @@ export const getPlayersByState = async (req, res) => {
       return res.status(400).json({ message: 'State parameter is required' })
     }
 
-      const sort = {}
-      sort['createdAt'] = -1
+    const sort = {}
+    sort['createdAt'] = -1
 
     const filteredPlayers = await Player.find({
       state: new RegExp(`^${state}$`, 'i'),
-    }).sort(sort).exec()
+    })
+      .sort(sort)
+      .exec()
     console.log('Filtered Players:', filteredPlayers)
 
     if (!filteredPlayers.length) {
@@ -665,5 +659,118 @@ export const recentRegisteration = asyncHandler(async (req, res) => {
       success: false,
       message: 'Error while fetching recent registrations',
     })
+  }
+})
+
+export const fetchPlayersByStatus = asyncHandler(async (req, res) => {
+  try {
+    const { status } = req.query
+
+    const players = await Player.find({ status }).populate('user').exec()
+    const count = await Player.countDocuments({ status })
+
+    return res.status(200).json({
+      success: true,
+      players,
+      count,
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
+  }
+})
+
+export const fetchPlayersByStatusCSV = asyncHandler(async (req, res) => {
+  try {
+    const { status } = req.query
+
+    const players = await Player.find({ status }).populate('user').exec()
+    const count = await Player.countDocuments({ status })
+    console.log(`Generating CSV for ${count} Players`)
+    const csvData = players.map((player) => ({
+      playerId: player._id,
+      firstName: player.firstName,
+      lastName: player.lastName,
+      phone: player.user.phone,
+      email: player.user.email,
+      dateOfBirth: player.dateOfBirth,
+      trialCity: player.trialCity,
+      trialZone: player.trialZone,
+      state: player.state,
+      pincode: player.pincode || 'N/A',
+      playingRole: player.playingRole,
+      dateOfRegistration: player.dateOfRegistration,
+      status: player.status,
+    }))
+
+    const csv = parse(csvData, {
+      fields: [
+        'playerId',
+        'firstName',
+        'lastName',
+        'email',
+        'phone',
+        'dateOfBirth',
+        'trialCity',
+        'trialZone',
+        'state',
+        'pincode',
+        'playingRole',
+        'dateOfRegistration',
+        'status',
+      ],
+    })
+
+    res.header('Content-Type', 'text/csv')
+    res.attachment('playersReport.csv')
+
+    return res.send(csv)
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
+  }
+})
+
+export const sendEmailToPlayers = asyncHandler(async (req, res) => {
+  try {
+    const { status } = req.query
+
+    const players = await Player.find({ status }).populate('user').exec()
+    const count = await Player.countDocuments({ status })
+
+    if (!players.length) {
+      return res.status(404).json({ success: false, msg: 'No players found' })
+    }
+
+    players.forEach((player) => {
+      if (player?.user?.email) {
+        const emailContent = `
+          <html>
+            <body style="font-family: Arial, sans-serif;">
+              <h2>Dear ${player.firstName},</h2>
+              <p>Your profile is incomplete. Please log in to complete your profile and receive your ticket.</p>
+              <p>
+                <a href="https://sbpl-tc.com/login" style="display: inline-block; padding: 10px 15px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Complete Your Profile</a>
+              </p>
+              <p>Thank you!</p>
+              <p><strong>South Bharath Premier League</strong></p>
+            </body>
+          </html>
+        `
+        try {
+          sendEmail(player.user.email, 'Profile Incomplete', emailContent)
+        } catch (error) {
+          console.log('Error while sending mail for ' + player.user.email)
+        }
+      }
+    })
+
+    return res.status(200).json({
+      success: true,
+      msg: 'Players received mail',
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ success: false, msg: 'Server Error' })
   }
 })
