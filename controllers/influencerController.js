@@ -72,7 +72,7 @@ export const createInfluencer = asyncHandler(async (req, res) => {
 
 export const getInfluencerById = asyncHandler(async (req, res) => {
   try {
-    const { influencerId } = req.params
+    const { influencerId } = req.params;
     const influencer = await findById(
       Influencer,
       influencerId,
@@ -268,8 +268,7 @@ export const getInfluencersReportCSV = asyncHandler(async (req, res) => {
 
 export const updateInfluencer = asyncHandler(async (req, res) => {
   try {
-    const { influencerId } = req.params
-    const { instagramId, referralCode, city, state } = req.body
+    const { influencerId, instagramId, referralCode, city, state } = req.body
 
     let influencerDoc = await Influencer.findById(influencerId).populate('user')
     if (!influencerDoc) {
