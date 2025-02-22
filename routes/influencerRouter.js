@@ -3,6 +3,7 @@ import {
   createInfluencer,
   deleteInfluencer,
   getAllInfluencers,
+  getInfluencerById,
   getInfluencerByUser,
   getInfluencersReportCSV,
   getTopKInfluencer,
@@ -15,7 +16,7 @@ import {
 const influencerRouter = express.Router()
 
 influencerRouter.route('/create').post(createInfluencer)
-// influencerRouter.route('/getById/:influencerId').get(createInfluencer)
+influencerRouter.route('/getById/:influencerId').get(getInfluencerById)
 influencerRouter.route('/getAll').get(getAllInfluencers)
 influencerRouter.route('/getByUser/:userId').get(getInfluencerByUser)
 influencerRouter.route('/getTotalCount').get(getTotalCountOfInfluencer)
@@ -23,6 +24,6 @@ influencerRouter.route('/getTopKInfluencer').get(getTopKInfluencer)
 influencerRouter.route('/getTotalReferrals').get(getTotalReferrals)
 influencerRouter.route('/searchInfluencers').get(searchInfluencers)
 influencerRouter.route('/downloadInfluencersCsv').get(getInfluencersReportCSV)
-influencerRouter.route('/update/:influencerId').post(updateInfluencer)
+influencerRouter.route('/update').post(updateInfluencer)
 influencerRouter.route('/delete/:influencerId').delete(deleteInfluencer)
 export default influencerRouter
