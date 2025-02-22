@@ -487,8 +487,6 @@ export const getPlayersByState = async (req, res) => {
       return res.status(400).json({ message: 'State parameter is required' })
     }
 
-    const players = await Player.find()
-    console.log('Existing players:', players)
     const filteredPlayers = await Player.find({
       state: new RegExp(`^${state}$`, 'i'),
     })
