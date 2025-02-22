@@ -1,4 +1,5 @@
 import asyncHandler from 'express-async-handler'
+import { parse } from 'json2csv'
 import { findById, findByUserId, paginate } from '../manager/finder.js'
 import Influencer from '../schemas/influencerSchema.js'
 import User from '../schemas/userSchema.js'
@@ -6,7 +7,6 @@ import {
   handleAlreadyExists,
   handleErrorResponse,
 } from '../utils/responseHandlers.js'
-import { parse } from 'json2csv'
 
 export const createInfluencer = asyncHandler(async (req, res) => {
   try {
@@ -179,7 +179,7 @@ export const getTopKInfluencer = asyncHandler(async (req, res) => {
     const topInfluencers = await Influencer.find()
       .sort({ referrals: -1 })
       .limit(Number(k))
-      .populate('user')  
+      .populate('user')
 
     res.status(200).json({ topInfluencers })
   } catch (error) {
@@ -221,47 +221,116 @@ export const searchInfluencers = async (req, res) => {
 
 export const getInfluencersReportCSV = asyncHandler(async (req, res) => {
   try {
-    const influencers = await Influencer.find({}).populate("user");
+    const influencers = await Influencer.find({}).populate('user')
 
     if (influencers.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No influencers found.",
-      });
+        message: 'No influencers found.',
+      })
     }
 
     const csvData = influencers.map((influencer) => ({
       influencerId: influencer._id,
-      userId: influencer.user ? influencer.user._id : "N/A", 
+      userId: influencer.user ? influencer.user._id : 'N/A',
       referrals: influencer.referrals,
       referralCode: influencer.referralCode,
-      instagramId: influencer.instagramId || "N/A",
-      city: influencer.city || "N/A",
-      state: influencer.state || "N/A",
-      dateOfRegistration: influencer.createdAt, 
+      instagramId: influencer.instagramId || 'N/A',
+      city: influencer.city || 'N/A',
+      state: influencer.state || 'N/A',
+      dateOfRegistration: influencer.createdAt,
       updatedAt: influencer.updatedAt,
-    }));
+    }))
 
     const csv = parse(csvData, {
       fields: [
-        "influencerId",
-        "userId",
-        "referrals",
-        "referralCode",
-        "instagramId",
-        "city",
-        "state",
-        "dateOfRegistration",
-        "updatedAt",
+        'influencerId',
+        'userId',
+        'referrals',
+        'referralCode',
+        'instagramId',
+        'city',
+        'state',
+        'dateOfRegistration',
+        'updatedAt',
       ],
-    });
+    })
 
-    res.header('Content-Type', 'text/csv');
-    res.attachment('influencersReport.csv');
+    res.header('Content-Type', 'text/csv')
+    res.attachment('influencersReport.csv')
 
-    return res.send(csv);
+    return res.send(csv)
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ success: false, error });
+    console.log(error)
+    return res.status(500).json({ success: false, error })
   }
-});
+})
+
+export const updateInfluencer = asyncHandler(async (req, res) => {
+  try {
+    const { influencerId } = req.params
+    const { instagramId, referralCode, city, state } = req.body
+
+    let influencerDoc = await Influencer.findById(influencerId).populate('user')
+    if (!influencerDoc) {
+      return res
+        .status(404)
+        .json({ success: false, msg: 'Influencer profile not found' })
+    }
+
+    let userDoc = await User.findById(influencerDoc.user._id)
+    if (!userDoc) {
+      return res
+        .status(404)
+        .json({ success: false, msg: 'Associated user not found' })
+    }
+
+    if (referralCode && referralCode !== influencerDoc.referralCode) {
+      let existingInfluencer = await Influencer.findOne({ referralCode })
+      if (existingInfluencer) {
+        return handleAlreadyExists(res, 'Influencer', referralCode)
+      }
+    }
+
+    influencerDoc.instagramId = instagramId || influencerDoc.instagramId
+    influencerDoc.referralCode = referralCode || influencerDoc.referralCode
+    influencerDoc.city = city || influencerDoc.city
+    influencerDoc.state = state || influencerDoc.state
+
+    await influencerDoc.save()
+
+    return res.status(200).json({
+      success: true,
+      influencerDoc,
+      msg: 'Influencer updated successfully',
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while updating Influencer')
+  }
+})
+
+export const deleteInfluencer = asyncHandler(async (req, res) => {
+  try {
+    const { influencerId } = req.params
+
+    const influencerDoc = await Influencer.findById(influencerId)
+    if (!influencerDoc) {
+      return res
+        .status(404)
+        .json({ success: false, msg: 'Influencer not found' })
+    }
+
+    await User.findByIdAndDelete(influencerDoc.user)
+
+    await Influencer.findByIdAndDelete(influencerId)
+
+    return res.status(200).json({
+      success: true,
+      msg: 'Influencer and associated user deleted successfully',
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while deleting Influencer')
+  }
+})
