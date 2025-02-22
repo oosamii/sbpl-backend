@@ -45,6 +45,7 @@ const playerSchema = mongoose.Schema(
     bowlingStyle: String,
     battingHandedness: String,
     bowlingHandedness: String,
+    referralCode: String,
     dateOfRegistration: {
       type: Date,
       required: true,
