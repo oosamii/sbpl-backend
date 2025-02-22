@@ -8,6 +8,7 @@ import {
   getTotalCountOfInfluencer,
   getTotalReferrals,
   searchInfluencers,
+  updateInfluencer,
 } from '../controllers/influencerController.js'
 
 const influencerRouter = express.Router()
@@ -20,5 +21,6 @@ influencerRouter.route('/getTotalCount').get(getTotalCountOfInfluencer)
 influencerRouter.route('/getTopKInfluencer').get(getTopKInfluencer)
 influencerRouter.route('/getTotalReferrals').get(getTotalReferrals)
 influencerRouter.route('/searchInfluencers').get(searchInfluencers)
-influencerRouter.route('/downloadInfluencersCsv').get(getInfluencersReportCSV);
+influencerRouter.route('/downloadInfluencersCsv').get(getInfluencersReportCSV)
+influencerRouter.route('/update/:influencerId').post(updateInfluencer)
 export default influencerRouter
