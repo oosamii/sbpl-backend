@@ -82,7 +82,7 @@ export const createPlayer = asyncHandler(async (req, res) => {
       influencer: influencerDoc ? influencerDoc._id : null,
       status: 'PAYMENT_DONE',
       referralCode,
-      paymentId,
+      paymentId: paymentId?.current ?? '',
     })
 
     //send email to player Payment recieved, Registration successfull.
