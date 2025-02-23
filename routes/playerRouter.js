@@ -10,9 +10,11 @@ import {
   getPlayerRegistrationsCount,
   getPlayersByState,
   getPlayersReportCSV,
+  partialPlayerRegistration,
   recentRegisteration,
   searchPlayers,
   sendEmailToPlayers,
+  usersWithoutPlayer,
 } from '../controllers/playerController.js'
 
 const playerRouter = express.Router()
@@ -30,5 +32,7 @@ playerRouter.route('/recent').get(recentRegisteration)
 playerRouter.route('/getPlayersByStatus').get(fetchPlayersByStatus)
 playerRouter.route('/getPlayersByStatusCSV').get(fetchPlayersByStatusCSV)
 playerRouter.route('/sendPlayerEmails').post(sendEmailToPlayers)
+playerRouter.route('/usersWithoutPlayer').get(usersWithoutPlayer)
+playerRouter.route('/partialRegistration').post(partialPlayerRegistration)
 
 export default playerRouter

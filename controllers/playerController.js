@@ -86,10 +86,11 @@ export const createPlayer = asyncHandler(async (req, res) => {
     })
 
     //send email to player Payment recieved, Registration successfull.
-    sendEmail(
-      userDoc?.email,
-      'Payment Recieved',
-      `<!DOCTYPE html>
+    try {
+      sendEmail(
+        userDoc?.email,
+        'Payment Recieved',
+        `<!DOCTYPE html>
             <html lang="en">
               <head>
                 <meta charset="UTF-8" />
@@ -186,7 +187,10 @@ export const createPlayer = asyncHandler(async (req, res) => {
                 </div>
               </body>
             </html>`
-    )
+      )
+    } catch (error) {
+      console.log('Error while sending email for user', userDoc)
+    }
 
     return res.status(200).json({
       success: true,
@@ -772,5 +776,192 @@ export const sendEmailToPlayers = asyncHandler(async (req, res) => {
   } catch (error) {
     console.log(error)
     return res.status(500).json({ success: false, msg: 'Server Error' })
+  }
+})
+
+export const usersWithoutPlayer = asyncHandler(async (req, res) => {
+  try {
+    const players = await Player.find({}, 'user') // Get all player user IDs
+    const playerUserIds = players.map((player) => player.user.toString())
+
+    const usersWithoutPlayers = await User.find({
+      role: 'PLAYER',
+      _id: { $nin: playerUserIds }, // Users not in the Player collection
+    })
+
+    const count = await User.countDocuments({
+      role: 'PLAYER',
+      _id: { $nin: playerUserIds },
+    })
+
+    const csvData = usersWithoutPlayers.map((user) => ({
+      userId: user._id,
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
+      createdAt: user.createdAt,
+    }))
+
+    const csv = parse(csvData, {
+      fields: ['userId', 'username', 'email', 'phone', 'createdAt'],
+    })
+
+    res.header('Content-Type', 'text/csv')
+    res.attachment('playersReport.csv')
+
+    return res.send(csv)
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
+  }
+})
+
+export const partialPlayerRegistration = asyncHandler(async (req, res) => {
+  try {
+    const {
+      userId,
+      firstName,
+      lastName,
+      dateOfBirth,
+      playingRole,
+      battingHandedness,
+      bowlingHandedness,
+      pincode,
+      state,
+      trialCity,
+      trialZone,
+    } = req.body
+
+    const user = await findById(User, userId, [], 'User', res)
+    if (!user) {
+      return handleNotFound(res, 'User', userId)
+    }
+
+    const player = await Player.create({
+      user: userId,
+      firstName,
+      lastName,
+      dateOfBirth,
+      playingRole,
+      battingHandedness,
+      bowlingHandedness,
+      pincode,
+      state,
+      trialCity,
+      trialZone,
+    })
+
+    await sendEmail(
+      user?.email,
+      'Registration Successfull',
+      `
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Player Registration</title>
+              </head>
+              <body>
+                <div
+                  style="
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #f9f9f9;
+                    border-radius: 10px;
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                  "
+                >
+                  <div
+                    style="
+                      text-align: center;
+                      padding: 20px;
+                      background-color: #ffcc00;
+                      border-radius: 10px 10px 0 0;
+                    "
+                  >
+                    <h1 style="color: #333; margin: 0">Congratulations!</h1>
+                  </div>
+                  <div
+                    style="
+                      padding: 20px;
+                      background: rgba(255, 255, 255, 0.8);
+                      backdrop-filter: blur(5px);
+                      border-radius: 0 0 10px 10px;
+                      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                      text-align: center;
+                    "
+                  >
+                    <p style="margin: 0 0 15px">Dear Player,</p>
+                    <p style="margin: 0 0 15px">You have successfully registered!</p>
+
+                    <div
+                      style="
+                        margin: 20px 0;
+                        font-size: 24px;
+                        font-weight: bold;
+                        text-align: center;
+                        padding: 15px;
+                        border-radius: 10px;
+                        background: #333;
+                        color: #ffcc00;
+                        display: inline-block;
+                        letter-spacing: 3px;
+                      "
+                    >
+                      SBPL${playerDoc?._id
+                        ?.toString()
+                        ?.slice(-6)
+                        ?.toUpperCase()}
+                    </div>
+
+                    <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
+                    <p style="margin: 0 0 15px;">
+                      Share your golden ticket on social media for more visibility of your profile.
+                    </p>
+                    <p style="margin: 0 0 15px;">
+                      Before getting a chance to become a pro, let the world know! :')
+                    </p>
+                  </div>
+                  <div
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      padding: 15px;
+                      background-color: #f0f0f0;
+                      border-radius: 10px;
+                    "
+                  >
+                    <p style="margin: 0">Thank you for being part of SBPL!</p>
+                    <p style="margin: 0; margin-top: 5px; font-size: 12px; color: #777">
+                      &copy; 2025
+                      <a style="text-decoration: none" href="https://sbpl-tc.com/"
+                        >South Bharath Premier League</a
+                      >
+                      powered by
+                      <a
+                        style="text-decoration: none"
+                        href="https://www.orbittechnologys.com/"
+                        >Orbit Technologys</a
+                      >
+                      . All rights reserved.
+                    </p>
+                  </div>
+                </div>
+              </body>
+            </html>
+            `
+    )
+
+    return res.status(200).json({
+      success: true,
+      player,
+      msg: 'Player created successfully',
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error)
   }
 })
