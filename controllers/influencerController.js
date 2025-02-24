@@ -101,7 +101,7 @@ export const getAllInfluencers = asyncHandler(async (req, res) => {
       page: req.query.page,
       pageSize: req.query.pageSize,
       sortField: req.query.sortField || 'createdAt',
-      sortOrder: req.query.sortOrder || 'asc',
+      sortOrder: req.query.sortOrder || 'desc',
       populateFields: ['user'],
     }
     const { documents: influencers, pagination } = await paginate(
