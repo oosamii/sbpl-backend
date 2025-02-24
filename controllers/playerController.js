@@ -149,9 +149,9 @@ export const createPlayer = asyncHandler(async (req, res) => {
                       "
                     >
                       SBPL${playerDoc?._id
-          ?.toString()
-          ?.slice(-6)
-          ?.toUpperCase()}
+                        ?.toString()
+                        ?.slice(-6)
+                        ?.toUpperCase()}
                     </div>
 
                     <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
@@ -248,14 +248,14 @@ export const createGulfPlayer = asyncHandler(async (req, res) => {
       bowlingHandedness,
       referralCode,
       paymentId,
-    } = req.body;
+    } = req.body
 
     // Check if the user already exists
-    let userDoc = await User.findOne({ email });
-    if (userDoc) return handleAlreadyExists(res, 'User', email);
+    let userDoc = await User.findOne({ email })
+    if (userDoc) return handleAlreadyExists(res, 'User', email)
 
-    userDoc = await User.findOne({ phone });
-    if (userDoc) return handleAlreadyExists(res, 'User', phone);
+    userDoc = await User.findOne({ phone })
+    if (userDoc) return handleAlreadyExists(res, 'User', phone)
 
     // Create new user
     userDoc = await User.create({
@@ -264,16 +264,16 @@ export const createGulfPlayer = asyncHandler(async (req, res) => {
       phone,
       password,
       role: 'PLAYER',
-    });
+    })
 
-    console.log('Gulf Player User created successfully', userDoc);
+    console.log('Gulf Player User created successfully', userDoc)
 
-    let influencerDoc = null;
+    let influencerDoc = null
     if (referralCode) {
-      influencerDoc = await Influencer.findOne({ referralCode });
+      influencerDoc = await Influencer.findOne({ referralCode })
       if (influencerDoc) {
-        influencerDoc.referrals += 1;
-        await influencerDoc.save();
+        influencerDoc.referrals += 1
+        await influencerDoc.save()
       }
     }
 
@@ -321,7 +321,7 @@ export const createGulfPlayer = asyncHandler(async (req, res) => {
       referralCode,
       gulfPlayer: true,
       paymentId: paymentId?.current ?? '',
-    });
+    })
 
     // Send confirmation email
     try {
@@ -385,9 +385,9 @@ export const createGulfPlayer = asyncHandler(async (req, res) => {
                       "
                     >
                       SBPL${playerDoc?._id
-          ?.toString()
-          ?.slice(-6)
-          ?.toUpperCase()}
+                        ?.toString()
+                        ?.slice(-6)
+                        ?.toUpperCase()}
                     </div>
 
                     <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
@@ -434,13 +434,12 @@ export const createGulfPlayer = asyncHandler(async (req, res) => {
       success: true,
       msg: 'Gulf Player Created Successfully',
       playerDoc,
-
-    });
+    })
   } catch (error) {
-    console.log(error);
-    return handleErrorResponse(res, error, 'Error while creating Gulf Player');
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while creating Gulf Player')
   }
-});
+})
 
 export const getPlayerById = asyncHandler(async (req, res) => {
   try {
@@ -659,9 +658,9 @@ export const continuePlayerRegistration = asyncHandler(async (req, res) => {
                       "
                     >
                       SBPL${playerDoc?._id
-        ?.toString()
-        ?.slice(-6)
-        ?.toUpperCase()}
+                        ?.toString()
+                        ?.slice(-6)
+                        ?.toUpperCase()}
                     </div>
 
                     <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
@@ -745,40 +744,52 @@ export const getPlayersByState = async (req, res) => {
   }
 }
 
-export const searchPlayers = async (req, res) => {
+export const searchPlayers = asyncHandler(async (req, res) => {
   try {
     const { query } = req.query
 
     if (!query) {
-      return res.status(400).json({ message: 'Query parameter is required' })
+      return res.status(400).json({
+        success: false,
+        msg: 'Query parameter is required',
+      })
     }
 
-    // Case-insensitive search across multiple fields
     const searchQuery = new RegExp(query, 'i')
-
     const players = await Player.find({
       $or: [
-        { firstName: searchQuery },
-        { lastName: searchQuery },
-        { middleName: searchQuery },
-        { state: searchQuery },
-        { city: searchQuery },
-        { playingRole: searchQuery },
-        { battingStyle: searchQuery },
-        { bowlingStyle: searchQuery },
+        { firstName: { $regex: searchQuery } },
+        { lastName: { $regex: searchQuery } },
+        { middleName: { $regex: searchQuery } },
+        { state: { $regex: searchQuery } },
+        { city: { $regex: searchQuery } },
+        { playingRole: { $regex: searchQuery } },
+        { battingStyle: { $regex: searchQuery } },
+        { bowlingStyle: { $regex: searchQuery } },
       ],
     })
 
-    if (!players.length) {
-      return res.status(404).json({ message: 'No players found' })
+    if (players.length === 0) {
+      return res.status(404).json({
+        success: false,
+        msg: 'No players found with the given query',
+      })
     }
 
-    res.status(200).json(players)
+    return res.status(200).json({
+      success: true,
+      msg: 'Players retrieved successfully',
+      data: players,
+    })
   } catch (error) {
     console.error(error)
-    res.status(500).json({ message: 'Server error' })
+    return res.status(500).json({
+      success: false,
+      msg: 'Failed to retrieve players',
+      error: error.message,
+    })
   }
-}
+})
 
 export const getPlayersReportCSV = asyncHandler(async (req, res) => {
   try {
