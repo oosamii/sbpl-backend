@@ -209,28 +209,44 @@ export const verifyEmailOtp = asyncHandler(async (req, res) => {
     });
   }
 });
-
-export const resetPassword = asyncHandler(async (req, res) => {
+*/
+export const resetAdminPassword = asyncHandler(async (req, res) => {
   try {
-    const { userId, password } = req.params;
+    const { userId, oldPassword, newPassword } = req.body;
+
     const userDoc = await User.findById(userId);
     if (!userDoc) {
       return res
         .status(404)
         .json({ success: false, msg: `User Id Not Found ${userId}` });
     }
-    userDoc.password = password;
+    if (userDoc.role !== 'ADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized: Only admins can reset passwords',
+      })
+    }
+
+    const isMatch = await userDoc.matchPassword(oldPassword)
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Incorrect old password',
+      })
+    }
+
+    userDoc.password = newPassword;
     await userDoc.save();
     return res
       .status(200)
-      .json({ success: true, msg: "Password Updated Successfully",userDoc });
+      .json({ success: true, msg: "Password Updated Successfully", userDoc });
   } catch (error) {
     console.error('Error in resetPassword:', error)
     return res
       .status(500)
       .json({ success: false, msg: 'Internal Server Error' })
   }
-}) */
+})
 
 export const triggerEmailOtp = asyncHandler(async (req, res) => {
   try {

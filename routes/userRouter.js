@@ -4,7 +4,8 @@ import {
   deleteUser,
   // forgotPassword,
   getAllUsers,
-  getUserByToken
+  getUserByToken,
+  resetAdminPassword
 } from '../controllers/userController.js'
 import { authorize, protect } from '../middlewares/authMiddleware.js'
 
@@ -21,6 +22,6 @@ userRouter.get('/admin-only', protect, authorize('ADMIN'), (req, res) => {
   res.status(200).json({ success: true, message: 'Welcome Admin!' })
 })
 // userRouter.route('/forgotPassword').post(forgotPassword)
-// userRouter.route('/resetPassword').post(resetPassword)
+userRouter.route('/resetAdminPassword').post(resetAdminPassword);
 
 export default userRouter
