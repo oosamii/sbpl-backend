@@ -33,6 +33,7 @@ export const createPlayer = asyncHandler(async (req, res) => {
       bowlingHandedness,
       referralCode,
       paymentId,
+      aadhaarNumber,
     } = req.body
 
     let userDoc = await User.findOne({ email })
@@ -83,6 +84,7 @@ export const createPlayer = asyncHandler(async (req, res) => {
       status: 'PAYMENT_DONE',
       referralCode,
       paymentId: paymentId?.current ?? '',
+      aadhaarNumber,
     })
 
     //send email to player Payment recieved, Registration successfull.
