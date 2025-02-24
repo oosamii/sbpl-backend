@@ -821,6 +821,7 @@ export const partialPlayerRegistration = asyncHandler(async (req, res) => {
     const {
       userId,
       firstName,
+      middleName,
       lastName,
       dateOfBirth,
       playingRole,
@@ -840,6 +841,7 @@ export const partialPlayerRegistration = asyncHandler(async (req, res) => {
     const player = await Player.create({
       user: userId,
       firstName,
+      middleName,
       lastName,
       dateOfBirth,
       playingRole,
@@ -849,6 +851,8 @@ export const partialPlayerRegistration = asyncHandler(async (req, res) => {
       state,
       trialCity,
       trialZone,
+      dateOfRegistration: new Date(),
+      status: 'PAYMENT_DONE',
     })
 
     await sendEmail(
@@ -911,10 +915,7 @@ export const partialPlayerRegistration = asyncHandler(async (req, res) => {
                         letter-spacing: 3px;
                       "
                     >
-                      SBPL${playerDoc?._id
-                        ?.toString()
-                        ?.slice(-6)
-                        ?.toUpperCase()}
+                      SBPL${player?._id?.toString()?.slice(-6)?.toUpperCase()}
                     </div>
 
                     <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
