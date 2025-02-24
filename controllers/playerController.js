@@ -675,12 +675,23 @@ export const getPlayersByState = async (req, res) => {
     const sort = {}
     sort['createdAt'] = -1
 
-    const filteredPlayers = await Player.find({
-      state: new RegExp(`^${state}$`, 'i'),
-    })
-      .sort(sort)
-      .exec()
-    console.log('Filtered Players:', filteredPlayers)
+    const filteredPlayers = []
+
+    if (state === 'Gulf') {
+      const filteredPlayers = await Player.find({
+        gulfPlayer: true,
+      })
+        .sort(sort)
+        .exec()
+      console.log('Filtered Players:', filteredPlayers)
+    } else {
+      filteredPlayers = await Player.find({
+        state: new RegExp(`^${state}$`, 'i'),
+      })
+        .sort(sort)
+        .exec()
+      console.log('Filtered Players:', filteredPlayers)
+    }
 
     if (!filteredPlayers.length) {
       return res
