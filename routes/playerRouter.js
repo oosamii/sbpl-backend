@@ -1,9 +1,11 @@
 import express from 'express'
 import {
   continuePlayerRegistration,
+  createGulfPlayer,
   createPlayer,
   fetchPlayersByStatus,
   fetchPlayersByStatusCSV,
+  getAllGulfPlayers,
   getAllPlayers,
   getPlayerById,
   getPlayerByUser,
@@ -34,5 +36,8 @@ playerRouter.route('/getPlayersByStatusCSV').get(fetchPlayersByStatusCSV)
 playerRouter.route('/sendPlayerEmails').post(sendEmailToPlayers)
 playerRouter.route('/usersWithoutPlayer').get(usersWithoutPlayer)
 playerRouter.route('/partialRegistration').post(partialPlayerRegistration)
+
+playerRouter.route('/registerGulfPlayer').post(createGulfPlayer);
+playerRouter.route('/getAllGulfPlayers').get(getAllGulfPlayers);
 
 export default playerRouter

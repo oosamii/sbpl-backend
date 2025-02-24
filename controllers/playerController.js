@@ -149,9 +149,9 @@ export const createPlayer = asyncHandler(async (req, res) => {
                       "
                     >
                       SBPL${playerDoc?._id
-                        ?.toString()
-                        ?.slice(-6)
-                        ?.toUpperCase()}
+          ?.toString()
+          ?.slice(-6)
+          ?.toUpperCase()}
                     </div>
 
                     <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
@@ -204,6 +204,243 @@ export const createPlayer = asyncHandler(async (req, res) => {
     return handleErrorResponse(res, error, 'Error while creating Admin user')
   }
 })
+
+export const createGulfPlayer = asyncHandler(async (req, res) => {
+  try {
+    const {
+      email,
+      phone,
+      password,
+      firstName,
+      middleName,
+      lastName,
+      dateOfBirth,
+      trialCity,
+      trialZone,
+      address,
+      // state,
+      city,
+      locality,
+      pincode,
+      landmark,
+      currentAddress,
+      currentState,
+      currentCity,
+      currentLocality,
+      currentPincode,
+      currentLandmark,
+      aadhaarNumber,
+      emergencyContact,
+      instagramId,
+      facebookId,
+      aadhaarImage,
+      trouserSize,
+      tshirtSize,
+      shoeSize,
+      bloodGroup,
+      selectCountry,
+      selectState,
+      playingRole,
+      prefferedBattingOrder,
+      battingStyle,
+      bowlingStyle,
+      battingHandedness,
+      bowlingHandedness,
+      referralCode,
+      paymentId,
+    } = req.body;
+
+    // Check if the user already exists
+    let userDoc = await User.findOne({ email });
+    if (userDoc) return handleAlreadyExists(res, 'User', email);
+
+    userDoc = await User.findOne({ phone });
+    if (userDoc) return handleAlreadyExists(res, 'User', phone);
+
+    // Create new user
+    userDoc = await User.create({
+      username: `${firstName} ${middleName ?? ''} ${lastName}`,
+      email,
+      phone,
+      password,
+      role: 'PLAYER',
+    });
+
+    console.log('Gulf Player User created successfully', userDoc);
+
+    let influencerDoc = null;
+    if (referralCode) {
+      influencerDoc = await Influencer.findOne({ referralCode });
+      if (influencerDoc) {
+        influencerDoc.referrals += 1;
+        await influencerDoc.save();
+      }
+    }
+
+    // Create new player entry
+    const playerDoc = await Player.create({
+      user: userDoc._id,
+      firstName,
+      middleName,
+      lastName,
+      dateOfBirth,
+      trialCity,
+      trialZone,
+      address,
+      // state,
+      city,
+      locality,
+      pincode,
+      landmark,
+      currentAddress,
+      currentState,
+      currentCity,
+      currentLocality,
+      currentPincode,
+      currentLandmark,
+      aadhaarNumber,
+      emergencyContact,
+      instagramId,
+      facebookId,
+      aadhaarImage,
+      trouserSize,
+      tshirtSize,
+      shoeSize,
+      bloodGroup,
+      selectCountry,
+      selectState,
+      playingRole,
+      prefferedBattingOrder,
+      battingStyle,
+      bowlingStyle,
+      battingHandedness,
+      bowlingHandedness,
+      dateOfRegistration: new Date(),
+      influencer: influencerDoc ? influencerDoc._id : null,
+      status: 'PAYMENT_DONE',
+      referralCode,
+      gulfPlayer: true,
+      paymentId: paymentId?.current ?? '',
+    });
+
+    // Send confirmation email
+    try {
+      sendEmail(
+        userDoc?.email,
+        'Payment Recieved',
+        `<!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Player Registration</title>
+              </head>
+              <body>
+                <div
+                  style="
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #f9f9f9;
+                    border-radius: 10px;
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                  "
+                >
+                  <div
+                    style="
+                      text-align: center;
+                      padding: 20px;
+                      background-color: #ffcc00;
+                      border-radius: 10px 10px 0 0;
+                    "
+                  >
+                    <h1 style="color: #333; margin: 0">Congratulations!</h1>
+                  </div>
+                  <div
+                    style="
+                      padding: 20px;
+                      background: rgba(255, 255, 255, 0.8);
+                      backdrop-filter: blur(5px);
+                      border-radius: 0 0 10px 10px;
+                      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                      text-align: center;
+                    "
+                  >
+                    <p style="margin: 0 0 15px">Dear Player,</p>
+                    <p style="margin: 0 0 15px">You have successfully registered!</p>
+
+                    <div
+                      style="
+                        margin: 20px 0;
+                        font-size: 24px;
+                        font-weight: bold;
+                        text-align: center;
+                        padding: 15px;
+                        border-radius: 10px;
+                        background: #333;
+                        color: #ffcc00;
+                        display: inline-block;
+                        letter-spacing: 3px;
+                      "
+                    >
+                      SBPL${playerDoc?._id
+          ?.toString()
+          ?.slice(-6)
+          ?.toUpperCase()}
+                    </div>
+
+                    <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
+                    <p style="margin: 0 0 15px;">
+                      Share your golden ticket on social media for more visibility of your profile.
+                    </p>
+                    <p style="margin: 0 0 15px;">
+                      Before getting a chance to become a pro, let the world know! :')
+                    </p>
+                  </div>
+                  <div
+                    style="
+                      text-align: center;
+                      margin-top: 10px;
+                      padding: 15px;
+                      background-color: #f0f0f0;
+                      border-radius: 10px;
+                    "
+                  >
+                    <p style="margin: 0">Thank you for being part of SBPL!</p>
+                    <p style="margin: 0; margin-top: 5px; font-size: 12px; color: #777">
+                      &copy; 2025
+                      <a style="text-decoration: none" href="https://sbpl-tc.com/"
+                        >South Bharath Premier League</a
+                      >
+                      powered by
+                      <a
+                        style="text-decoration: none"
+                        href="https://www.orbittechnologys.com/"
+                        >Orbit Technologys</a
+                      >
+                      . All rights reserved.
+                    </p>
+                  </div>
+                </div>
+              </body>
+            </html>`
+      )
+    } catch (error) {
+      console.log('Error while sending email for user', userDoc)
+    }
+
+    return res.status(200).json({
+      success: true,
+      msg: 'Gulf Player Created Successfully',
+      playerDoc,
+
+    });
+  } catch (error) {
+    console.log(error);
+    return handleErrorResponse(res, error, 'Error while creating Gulf Player');
+  }
+});
 
 export const getPlayerById = asyncHandler(async (req, res) => {
   try {
@@ -422,9 +659,9 @@ export const continuePlayerRegistration = asyncHandler(async (req, res) => {
                       "
                     >
                       SBPL${playerDoc?._id
-                        ?.toString()
-                        ?.slice(-6)
-                        ?.toUpperCase()}
+        ?.toString()
+        ?.slice(-6)
+        ?.toUpperCase()}
                     </div>
 
                     <p style="margin: 0 0 15px; font-weight: bold;">Stay Tuned! Trials coming soon.</p>
@@ -966,5 +1203,31 @@ export const partialPlayerRegistration = asyncHandler(async (req, res) => {
   } catch (error) {
     console.log(error)
     return handleErrorResponse(res, error)
+  }
+})
+
+export const getAllGulfPlayers = asyncHandler(async (req, res) => {
+  try {
+    const options = {
+      page: req.query.page,
+      pageSize: req.query.pageSize,
+      sortField: req.query.sortField || 'createdAt',
+      sortOrder: req.query.sortOrder || 'desc',
+      populateFields: ['user'],
+    }
+
+    const { documents: players, pagination } = await paginate(
+      Player,
+      { gulfPlayer: true },
+      options
+    )
+    return res.status(200).json({
+      success: true,
+      players,
+      pagination,
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while fetching Players')
   }
 })
