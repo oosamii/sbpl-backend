@@ -678,7 +678,7 @@ export const getPlayersByState = async (req, res) => {
     let filteredPlayers = []
 
     if (state === 'Gulf') {
-      const filteredPlayers = await Player.find({
+      filteredPlayers = await Player.find({
         gulfPlayer: true,
       })
         .sort(sort)
