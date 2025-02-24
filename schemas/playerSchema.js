@@ -15,7 +15,7 @@ const playerSchema = mongoose.Schema(
     trialCity: reqString,
     trialZone: reqString,
     address: String,
-    state: reqString,
+    state: String,
     city: String,
     locality: String,
     pincode: String,
@@ -35,6 +35,27 @@ const playerSchema = mongoose.Schema(
     tshirtSize: String,
     shoeSize: String,
     bloodGroup: String,
+    selectCountry: {
+      type: String,
+      enum: [
+        "KSA",
+        "Kuwait",
+        "Qatar",
+        "Bahrain",
+        "Oman",
+        "UAE"]
+    },
+    selectState: {
+      type: String,
+      enum: [
+        "Karnataka",
+        "Kerala",
+        "Tamil Nadu",
+        "Goa",
+        "Andhra Pradesh",
+        "Telangana"
+      ]
+    },
     playingRole: {
       type: String,
       enum: ['BATSMAN', 'BOWLER', 'ALL-ROUNDER'],
@@ -66,6 +87,10 @@ const playerSchema = mongoose.Schema(
       ref: 'influencers',
     },
     paymentId: String,
+    gulfPlayer: {
+      type: Boolean,
+      default: false
+    }
   },
   {
     timestamps: true,
