@@ -268,7 +268,8 @@ export const getInfluencersReportCSV = asyncHandler(async (req, res) => {
 
 export const updateInfluencer = asyncHandler(async (req, res) => {
   try {
-    const { influencerId, instagramId, referralCode, city, state } = req.body
+    const { influencerId, instagramId, referralCode, city, state, username } =
+      req.body
 
     let influencerDoc = await Influencer.findById(influencerId).populate('user')
     if (!influencerDoc) {
@@ -283,6 +284,8 @@ export const updateInfluencer = asyncHandler(async (req, res) => {
         .status(404)
         .json({ success: false, msg: 'Associated user not found' })
     }
+    userDoc.username = username ?? userDoc.username
+    await userDoc.save()
 
     if (referralCode && referralCode !== influencerDoc.referralCode) {
       let existingInfluencer = await Influencer.findOne({ referralCode })
