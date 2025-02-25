@@ -37,24 +37,18 @@ const playerSchema = mongoose.Schema(
     bloodGroup: String,
     selectCountry: {
       type: String,
-      enum: [
-        "KSA",
-        "Kuwait",
-        "Qatar",
-        "Bahrain",
-        "Oman",
-        "UAE"]
+      enum: ['India', 'KSA', 'Kuwait', 'Qatar', 'Bahrain', 'Oman', 'UAE'],
     },
     selectState: {
       type: String,
       enum: [
-        "Karnataka",
-        "Kerala",
-        "Tamil Nadu",
-        "Goa",
-        "Andhra Pradesh",
-        "Telangana"
-      ]
+        'Karnataka',
+        'Kerala',
+        'Tamil Nadu',
+        'Goa',
+        'Andhra Pradesh',
+        'Telangana',
+      ],
     },
     playingRole: {
       type: String,
@@ -89,8 +83,8 @@ const playerSchema = mongoose.Schema(
     paymentId: String,
     gulfPlayer: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -34,6 +34,7 @@ export const createPlayer = asyncHandler(async (req, res) => {
       referralCode,
       paymentId,
       aadhaarNumber,
+      selectCountry,
     } = req.body
 
     let userDoc = await User.findOne({ email })
@@ -63,6 +64,8 @@ export const createPlayer = asyncHandler(async (req, res) => {
       }
     }
 
+    let isGulfPlayer = selectCountry !== 'India'
+
     const playerDoc = await Player.create({
       user: userDoc._id,
       firstName,
@@ -85,6 +88,8 @@ export const createPlayer = asyncHandler(async (req, res) => {
       referralCode,
       paymentId: paymentId?.current ?? '',
       aadhaarNumber,
+      selectCountry,
+      gulfPlayer: isGulfPlayer,
     })
 
     //send email to player Payment recieved, Registration successfull.
