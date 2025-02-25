@@ -433,3 +433,20 @@ export const resetPassword = asyncHandler(async (req, res) => {
     });
   }
 });
+
+export const checkUserExists = async (req, res) => {
+  try {
+    const { phone } = req.params
+
+    const user = await User.findOne({ phone })
+
+    if (user) {
+      return res.status(200).json({ exists: true, message: 'User exists' })
+    } else {
+      return res.status(404).json({ exists: false, message: 'User not found' })
+    }
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Server error' })
+  }
+}

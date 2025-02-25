@@ -1,5 +1,6 @@
 import express from 'express'
 import {
+  checkUserExists,
   createAdminUser,
   deleteUser,
   // forgotPassword,
@@ -22,6 +23,7 @@ userRouter.get('/admin-only', protect, authorize('ADMIN'), (req, res) => {
   res.status(200).json({ success: true, message: 'Welcome Admin!' })
 })
 // userRouter.route('/forgotPassword').post(forgotPassword)
-userRouter.route('/resetAdminPassword').post(resetAdminPassword);
+userRouter.route('/resetAdminPassword').post(resetAdminPassword)
+userRouter.route('/exists/:phone').post(checkUserExists)
 
 export default userRouter
