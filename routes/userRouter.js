@@ -1,12 +1,13 @@
 import express from 'express'
 import {
   checkUserExists,
+  checkUserExistsByEmail,
   createAdminUser,
   deleteUser,
   // forgotPassword,
   getAllUsers,
   getUserByToken,
-  resetAdminPassword
+  resetAdminPassword,
 } from '../controllers/userController.js'
 import { authorize, protect } from '../middlewares/authMiddleware.js'
 
@@ -25,5 +26,6 @@ userRouter.get('/admin-only', protect, authorize('ADMIN'), (req, res) => {
 // userRouter.route('/forgotPassword').post(forgotPassword)
 userRouter.route('/resetAdminPassword').post(resetAdminPassword)
 userRouter.route('/exists/:phone').post(checkUserExists)
+userRouter.route('/existsByEmail/:email').post(checkUserExistsByEmail)
 
 export default userRouter

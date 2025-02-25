@@ -6,19 +6,19 @@ import {
   handleAlreadyExists,
   handleErrorResponse,
   handleNotFound,
-} from "../utils/responseHandlers.js"
+} from '../utils/responseHandlers.js'
 
 export const createAdminUser = asyncHandler(async (req, res) => {
   try {
-    const { username, email, phone, password } = req.body;
+    const { username, email, phone, password } = req.body
 
-    let userDoc = await User.findOne({ email });
+    let userDoc = await User.findOne({ email })
     if (userDoc) {
-      return handleAlreadyExists(res, "User", email);
+      return handleAlreadyExists(res, 'User', email)
     }
-    userDoc = await User.findOne({ phone });
+    userDoc = await User.findOne({ phone })
     if (userDoc) {
-      return handleAlreadyExists(res, "User", phone);
+      return handleAlreadyExists(res, 'User', phone)
     }
 
     userDoc = await User.create({
@@ -26,36 +26,36 @@ export const createAdminUser = asyncHandler(async (req, res) => {
       email,
       phone,
       password,
-      role: "ADMIN",
-    });
+      role: 'ADMIN',
+    })
 
-    console.log("Admin User created successfully", userDoc);
+    console.log('Admin User created successfully', userDoc)
 
     return res.status(200).json({
       success: true,
       userDoc,
-    });
+    })
   } catch (error) {
-    console.log(error);
-    return handleErrorResponse(res, error, "Error while creating Admin user");
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while creating Admin user')
   }
-});
+})
 
 export const loginUser = asyncHandler(async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
     if (!user) {
-      return res.status(401).json({ success: false, msg: "Invalid email" });
+      return res.status(401).json({ success: false, msg: 'Invalid email' })
     }
 
-    const isMatch = await user.matchPassword(password);
+    const isMatch = await user.matchPassword(password)
     if (!isMatch) {
-      return res.status(401).json({ success: false, msg: "Invalid password" });
+      return res.status(401).json({ success: false, msg: 'Invalid password' })
     }
 
-    const token = user.getSignedJwtToken();
+    const token = user.getSignedJwtToken()
 
     res.status(200).json({
       success: true,
@@ -66,81 +66,81 @@ export const loginUser = asyncHandler(async (req, res) => {
         email: user.email,
         role: user.role,
       },
-    });
+    })
   } catch (error) {
-    return handleErrorResponse(res, error, "Error during login");
+    return handleErrorResponse(res, error, 'Error during login')
   }
-});
+})
 
 export const getAllUsers = asyncHandler(async (req, res) => {
   try {
     const options = {
       page: req.query.page,
       pageSize: req.query.pageSize,
-      sortField: req.query.sortField || "createdAt",
-      sortOrder: req.query.sortOrder || "asc",
-    };
+      sortField: req.query.sortField || 'createdAt',
+      sortOrder: req.query.sortOrder || 'asc',
+    }
 
-    const { documents: users, pagination } = await paginate(User, {}, options);
+    const { documents: users, pagination } = await paginate(User, {}, options)
     return res.status(200).json({
       success: true,
       users,
       pagination,
-    });
+    })
   } catch (error) {
-    console.log(error);
-    return handleErrorResponse(res, error, "Error while fetching users");
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while fetching users')
   }
-});
+})
 
 export const getUserByToken = asyncHandler(async (req, res) => {
   try {
     return res.status(200).json({
       success: true,
       user: req.user,
-    });
+    })
   } catch (error) {
-    console.log(error);
-    return handleErrorResponse(res, error);
+    console.log(error)
+    return handleErrorResponse(res, error)
   }
-});
+})
 
 export const deleteUser = asyncHandler(async (req, res) => {
   try {
-    const { userId } = req.params;
-    if (!userId) return handleNotFound(res, "User", userId);
+    const { userId } = req.params
+    if (!userId) return handleNotFound(res, 'User', userId)
 
-    const user = await User.findByIdAndDelete(userId);
-    if (!user) return handleNotFound(res, "User", userId);
+    const user = await User.findByIdAndDelete(userId)
+    if (!user) return handleNotFound(res, 'User', userId)
 
     return res.status(200).json({
       success: true,
-      msg: "User deleted successfully",
+      msg: 'User deleted successfully',
       user,
-    });
+    })
   } catch (error) {
-    console.log(error);
-    return handleErrorResponse(res, error);
+    console.log(error)
+    return handleErrorResponse(res, error)
   }
 })
 
 function generateSecureNumericOTP(length) {
-  length = 4;
+  length = 4
 
-  const digits = "0123456789";
-  const digitsLength = digits.length;
+  const digits = '0123456789'
+  const digitsLength = digits.length
 
-  const array = new Uint32Array(length);
+  const array = new Uint32Array(length)
 
-  crypto.getRandomValues(array);
+  crypto.getRandomValues(array)
 
   const otp = Array.from(array, (value) => digits[value % digitsLength]).join(
-    ""
-  );
+    ''
+  )
   if (otp.length === length) {
-    return otp;
+    return otp
   }
-  return generateSecureNumericOTP(length);
+  return generateSecureNumericOTP(length)
 }
 
 /* export const forgotPassword = asyncHandler(async (req, res) => {
@@ -212,13 +212,13 @@ export const verifyEmailOtp = asyncHandler(async (req, res) => {
 */
 export const resetAdminPassword = asyncHandler(async (req, res) => {
   try {
-    const { userId, oldPassword, newPassword } = req.body;
+    const { userId, oldPassword, newPassword } = req.body
 
-    const userDoc = await User.findById(userId);
+    const userDoc = await User.findById(userId)
     if (!userDoc) {
       return res
         .status(404)
-        .json({ success: false, msg: `User Id Not Found ${userId}` });
+        .json({ success: false, msg: `User Id Not Found ${userId}` })
     }
     if (userDoc.role !== 'ADMIN') {
       return res.status(403).json({
@@ -235,11 +235,11 @@ export const resetAdminPassword = asyncHandler(async (req, res) => {
       })
     }
 
-    userDoc.password = newPassword;
-    await userDoc.save();
+    userDoc.password = newPassword
+    await userDoc.save()
     return res
       .status(200)
-      .json({ success: true, msg: "Password Updated Successfully", userDoc });
+      .json({ success: true, msg: 'Password Updated Successfully', userDoc })
   } catch (error) {
     console.error('Error in resetPassword:', error)
     return res
@@ -250,20 +250,20 @@ export const resetAdminPassword = asyncHandler(async (req, res) => {
 
 export const triggerEmailOtp = asyncHandler(async (req, res) => {
   try {
-    const { email } = req.body;
-    let userDoc = await User.findOne({ email: email });
+    const { email } = req.body
+    let userDoc = await User.findOne({ email: email })
     if (!userDoc) {
       return res.status(404).json({
         success: false,
-        msg: "User not found for the provided Email Id.",
-      });
+        msg: 'User not found for the provided Email Id.',
+      })
     }
-    const otp = generateSecureNumericOTP(4);
-    userDoc.otp = otp;
-    await userDoc.save();
+    const otp = generateSecureNumericOTP(4)
+    userDoc.otp = otp
+    await userDoc.save()
     await sendEmail(
       email,
-      "Password Reset",
+      'Password Reset',
       `
     <!DOCTYPE html>
     <html lang="en">
@@ -358,56 +358,56 @@ export const triggerEmailOtp = asyncHandler(async (req, res) => {
       </body>
     </html>
 `
-    );
+    )
 
     return res.status(200).json({
       success: true,
       userDoc,
-      msg: "OTP Sent Successfully",
-    });
+      msg: 'OTP Sent Successfully',
+    })
   } catch (error) {
-    console.error(error);
+    console.error(error)
     return res
       .status(500)
-      .json({ success: false, error: "Internal Server Error" });
+      .json({ success: false, error: 'Internal Server Error' })
   }
-});
+})
 
 export const verifyEmailOtp = asyncHandler(async (req, res) => {
   try {
-    const { otp, userId } = req.body;
+    const { otp, userId } = req.body
     const userDoc = await User.findOne({
       _id: userId,
-    });
+    })
 
     if (!userDoc) {
-      console.log("Invalid user id or OTP has expired: " + userId);
+      console.log('Invalid user id or OTP has expired: ' + userId)
       return res.status(400).json({
         success: false,
-        msg: "Invalid user id or OTP has expired",
-      });
+        msg: 'Invalid user id or OTP has expired',
+      })
     }
 
     if (otp != userDoc.otp) {
-      console.log("Invalid OTP: " + otp);
+      console.log('Invalid OTP: ' + otp)
       return res.status(400).json({
         success: false,
-        msg: "Invalid OTP: " + otp,
-      });
+        msg: 'Invalid OTP: ' + otp,
+      })
     }
 
     return res.status(200).json({
       success: true,
       userDoc,
-    });
+    })
   } catch (error) {
-    console.log(error);
+    console.log(error)
     return res.status(500).json({
       success: false,
       error,
-    });
+    })
   }
-});
+})
 
 export const resetPassword = asyncHandler(async (req, res) => {
   try {
@@ -420,25 +420,42 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
     // const salt = await bcrypt.genSalt(10)
     // user.password = await bcrypt.hash(newPassword, salt)
-    user.password = newPassword;
+    user.password = newPassword
     await user.save()
 
-    return res.status(200).json({ success: true, message: 'Password reset successfully' })
-
+    return res
+      .status(200)
+      .json({ success: true, message: 'Password reset successfully' })
   } catch (error) {
-    console.log(error);
+    console.log(error)
     return res.status(500).json({
       success: false,
       error,
-    });
+    })
   }
-});
+})
 
 export const checkUserExists = async (req, res) => {
   try {
     const { phone } = req.params
 
     const user = await User.findOne({ phone })
+
+    if (user) {
+      return res.status(200).json({ exists: true, message: 'User exists' })
+    } else {
+      return res.status(404).json({ exists: false, message: 'User not found' })
+    }
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Server error' })
+  }
+}
+
+export const checkUserExistsByEmail = async (req, res) => {
+  try {
+    const { email } = req.params
+    const user = await User.findOne({ email })
 
     if (user) {
       return res.status(200).json({ exists: true, message: 'User exists' })
