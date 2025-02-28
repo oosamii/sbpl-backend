@@ -91,7 +91,7 @@ export const checkPaymentStatus = asyncHandler(async (req, res) => {
 
     console.log(response.data, 'Phone Pe Status response')
 
-    if (response.data && response.data.state === 'SUCCESS') {
+    if (response.data && response.data.state === 'COMPLETED') {
       return res.json({ status: 'success' })
     } else {
       return res.json({ status: 'failed' })
