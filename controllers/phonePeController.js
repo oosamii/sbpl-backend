@@ -1,95 +1,103 @@
 import axios from 'axios'
-import crypto from 'crypto'
 import asyncHandler from 'express-async-handler'
-import { handleErrorResponse } from '../utils/responseHandlers.js'
+import { v4 as uuidv4 } from 'uuid'
+import Secret from '../schemas/secretsSchema.js'
 
 export const initiatePayment = asyncHandler(async (req, res) => {
-  const MERCHANT_ID = 'M22UNPVPNQDCM'
-  const SALT_KEY = '13a08676-49a3-4cfa-87d5-4853dbb1cd31'
-  const SALT_INDEX = 1
-  const PHONEPE_BASE_URL = 'https://api-preprod.phonepe.com/apis/pg-sandbox'
   try {
-    const { username, amount, mobile } = req.body
-    console.log(MERCHANT_ID, SALT_KEY, SALT_INDEX, PHONEPE_BASE_URL, 'Secrets')
-    const transactionId = `TXN-${Date.now()}`
+    const amount = 1000 // Amount in paise (1000 = ₹10)
+
+    // Fetch latest auth token from DB
+    const secret = await Secret.findOne({ type: 'O-Bearer' }).sort({
+      createdAt: -1,
+    })
+
+    if (!secret) {
+      return res.status(500).json({ error: 'Auth token not found' })
+    }
+
+    const authToken = secret.token
+    const merchantOrderId = uuidv4() // Generate unique order ID
 
     const payload = {
-      merchantId: MERCHANT_ID,
-      merchantTransactionId: transactionId,
-      merchantUserId: 'MUID123',
-      amount: 10000,
-      redirectUrl: 'https://webhook.site/redirect-url',
-      redirectMode: 'REDIRECT',
-      callbackUrl: 'https://webhook.site/callback-url',
-      mobileNumber: '9999999999',
-      paymentInstrument: {
-        type: 'PAY_PAGE',
+      merchantOrderId,
+      amount,
+      paymentFlow: {
+        type: 'PG_CHECKOUT',
+        message: 'Processing your payment',
+        merchantUrls: {
+          redirectUrl: 'https://sbpl-tc.com/payment-check/' + merchantOrderId,
+        },
       },
     }
-    console.log(payload, 'Payment Payload')
-
-    const encodedPayload = Buffer.from(JSON.stringify(payload)).toString(
-      'base64'
-    )
-
-    console.log(encodedPayload, 'Encoded Payload')
-
-    const string = encodedPayload + '/pg/v1/pay' + SALT_KEY
-
-    const sha256 = crypto.createHash('sha256').update(string).digest('hex')
-
-    const checksum = sha256 + '###' + SALT_INDEX
-
-    console.log(checksum, 'Checksum')
 
     const response = await axios.post(
-      `${PHONEPE_BASE_URL}/pg/v1/pay`,
-      { request: encodedPayload },
+      'https://api.phonepe.com/apis/pg/checkout/v2/pay',
+      payload,
       {
         headers: {
+          Authorization: `O-Bearer ${authToken}`,
           'Content-Type': 'application/json',
-          'X-VERIFY': checksum,
-          accept: 'application/json',
         },
       }
     )
 
-    res.json(response.data)
+    console.log('Phone Pe response Checkout api', response.data)
+
+    if (response.data && response.data.redirectUrl) {
+      return res.json({
+        success: true,
+        orderId: response.data.orderId,
+        redirectUrl: response.data.redirectUrl,
+      })
+    } else {
+      throw new Error('Invalid response from PhonePe')
+    }
   } catch (error) {
-    console.log(error, 'While initiating payment')
-    return handleErrorResponse(res, error)
+    console.error('Payment initiation error:', error.response?.data || error)
+    return res.status(500).json({ error: 'Payment initiation failed' })
   }
 })
 
 export const paymentCallback = asyncHandler(async (req, res) => {
-  console.log('Payment Callback Received:', req.body)
+  console.log('Payment Callback Received Phone Pe:', req.body)
   res.status(200).send('Callback received')
 })
 
 export const checkPaymentStatus = asyncHandler(async (req, res) => {
   try {
-    const { transactionId } = req.params
+    const { orderId } = req.query
 
-    const checksum =
-      crypto
-        .createHash('sha256')
-        .update(`/pg/v1/status/${MERCHANT_ID}/${transactionId}` + SALT_KEY)
-        .digest('hex') + `###${SALT_INDEX}`
+    // Fetch latest auth token from DB
+    const secret = await Secret.findOne({ type: 'O-Bearer' }).sort({
+      createdAt: -1,
+    })
+
+    if (!secret) {
+      return res.status(500).json({ error: 'Auth token not found' })
+    }
+
+    const authToken = secret.token
 
     const response = await axios.get(
-      `${PHONEPE_BASE_URL}/pg/v1/status/${MERCHANT_ID}/${transactionId}`,
+      `https://api.phonepe.com/pg/v1/status/${orderId}`,
       {
         headers: {
+          Authorization: `O-Bearer ${authToken}`,
           'Content-Type': 'application/json',
-          'X-VERIFY': checksum,
         },
       }
     )
-    console.log('Phone pe response', response.data)
 
-    res.json(response.data)
+    console.log(response.data, 'Phone Pe Status response')
+
+    if (response.data && response.data.state === 'SUCCESS') {
+      return res.json({ status: 'success' })
+    } else {
+      return res.json({ status: 'failed' })
+    }
   } catch (error) {
-    console.log(error)
-    return handleErrorResponse(res, error)
+    console.error('Payment verification error:', error)
+    return res.status(500).json({ error: 'Payment verification failed' })
   }
 })

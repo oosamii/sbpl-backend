@@ -9,6 +9,6 @@ const phonePeRouter = express.Router()
 
 phonePeRouter.route('/initiatePayment').post(initiatePayment)
 phonePeRouter.route('/payment/callback').get(paymentCallback)
-phonePeRouter.route('/paymentStatus/:transactionId').get(checkPaymentStatus)
+phonePeRouter.route('/paymentStatus/:orderId').get(checkPaymentStatus)
 
 export default phonePeRouter

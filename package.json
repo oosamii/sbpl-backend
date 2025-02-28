@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "agenda": "^5.0.0",
     "axios": "^1.8.1",
     "bcryptjs": "^3.0.1",
     "body-parser": "^1.20.3",
