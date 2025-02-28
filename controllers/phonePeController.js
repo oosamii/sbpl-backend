@@ -80,7 +80,7 @@ export const checkPaymentStatus = asyncHandler(async (req, res) => {
     const authToken = secret.token
 
     const response = await axios.get(
-      `https://api.phonepe.com/pg/v1/status/${orderId}`,
+      `https://api.phonepe.com/apis/pg/checkout/v2/order/${orderId}/status?details=false`,
       {
         headers: {
           Authorization: `O-Bearer ${authToken}`,
@@ -99,5 +99,16 @@ export const checkPaymentStatus = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error('Payment verification error:', error)
     return res.status(500).json({ error: 'Payment verification failed' })
+  }
+})
+
+export const generateToken = asyncHandler(async (req, res) => {
+  try {
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      error: error.message,
+      success: false,
+    })
   }
 })
