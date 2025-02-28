@@ -91,9 +91,9 @@ export const checkPaymentStatus = asyncHandler(async (req, res) => {
     console.log(response.data, 'Phone Pe Status response')
 
     if (response.data && response.data.state === 'COMPLETED') {
-      return res.json({ status: 'success' })
+      return res.json({ status: 'success', paymentId: response.data.orderId })
     } else {
-      return res.json({ status: 'failed' })
+      return res.json({ status: 'failed', state: response.data.state })
     }
   } catch (error) {
     console.error('Payment verification error:', error)
