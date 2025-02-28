@@ -5,9 +5,8 @@ import Secret from '../schemas/secretsSchema.js'
 
 export const initiatePayment = asyncHandler(async (req, res) => {
   try {
-    const amount = 1000 // Amount in paise (1000 = ₹10)
+    const amount = 100000
 
-    // Fetch latest auth token from DB
     const secret = await Secret.findOne({ type: 'O-Bearer' }).sort({
       createdAt: -1,
     })
