@@ -33,6 +33,7 @@ export const createPlayer = asyncHandler(async (req, res) => {
       bowlingHandedness,
       referralCode,
       paymentId,
+      orderId,
       aadhaarNumber,
       selectCountry,
     } = req.body
@@ -86,7 +87,8 @@ export const createPlayer = asyncHandler(async (req, res) => {
       influencer: influencerDoc ? influencerDoc._id : null,
       status: 'PAYMENT_DONE',
       referralCode,
-      paymentId: paymentId?.current ?? '',
+      paymentId: paymentId ?? '',
+      orderId: orderId ?? '',
       aadhaarNumber,
       selectCountry,
       gulfPlayer: isGulfPlayer,

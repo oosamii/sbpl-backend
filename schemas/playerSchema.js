@@ -81,6 +81,7 @@ const playerSchema = mongoose.Schema(
       ref: 'influencers',
     },
     paymentId: String,
+    orderId: String,
     gulfPlayer: {
       type: Boolean,
       default: false,
