@@ -66,7 +66,7 @@ export const paymentCallback = asyncHandler(async (req, res) => {
 
 export const checkPaymentStatus = asyncHandler(async (req, res) => {
   try {
-    const { orderId } = req.query
+    const { orderId } = req.params
 
     // Fetch latest auth token from DB
     const secret = await Secret.findOne({ type: 'O-Bearer' }).sort({
