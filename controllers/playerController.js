@@ -38,6 +38,8 @@ export const createPlayer = asyncHandler(async (req, res) => {
       selectCountry,
     } = req.body
 
+    console.log('Recieved request to register player', req.body)
+
     let userDoc = await User.findOne({ email })
     if (userDoc) {
       return handleAlreadyExists(res, 'User', email)
