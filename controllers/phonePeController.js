@@ -16,7 +16,7 @@ export const initiatePayment = asyncHandler(async (req, res) => {
     }
 
     const authToken = secret.token
-    const merchantOrderId = uuidv4() // Generate unique order ID
+    const merchantOrderId = uuidv4().replace(/-/g, '').substring(0, 20) // Generate unique order ID
 
     const payload = {
       merchantOrderId,
