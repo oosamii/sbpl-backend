@@ -3,6 +3,39 @@ import asyncHandler from 'express-async-handler'
 import { v4 as uuidv4 } from 'uuid'
 import Secret from '../schemas/secretsSchema.js'
 
+export const fetchLatestPhonePeAuthToken = asyncHandler(async (req, res) => {
+  try {
+    const response = await axios.post(
+      'https://api.phonepe.com/apis/identity-manager/v1/oauth/token',
+      new URLSearchParams({
+        client_id: process.env.PHONEPE_CLIENT_ID,
+        client_version: '1',
+        client_secret: process.env.PHONEPE_SALT_KEY,
+        grant_type: 'client_credentials',
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      }
+    )
+
+    if (response.data.access_token) {
+      console.log('Recieved response from Phone Pe', response.data, new Date())
+      await Secret.deleteMany({ type: 'O-Bearer' })
+      const newToken = new Secret({
+        token: response.data.access_token,
+        type: 'O-Bearer',
+        phoneResponse: JSON.stringify(response.data) ?? '',
+      })
+      await newToken.save()
+      console.log('New token saved:', response.data.access_token)
+      return response.data.access_token
+    }
+  } catch (error) {
+    console.error('Error fetching token:', error.response?.data || error)
+    return null
+  }
+})
+
 export const initiatePayment = asyncHandler(async (req, res) => {
   try {
     const amount = 100000
@@ -15,7 +48,20 @@ export const initiatePayment = asyncHandler(async (req, res) => {
       return res.status(500).json({ error: 'Auth token not found' })
     }
 
-    const authToken = secret.token
+    let authToken = null
+
+    const twentyMinutesAgo = new Date(Date.now() - 20 * 60 * 1000)
+
+    if (!secret.updatedAt || secret.updatedAt < twentyMinutesAgo) {
+      console.log('Token expired, fetching a new one...')
+      const newAuthToken = await fetchLatestPhonePeAuthToken()
+      if (!newAuthToken) {
+        return res.status(500).json({ error: 'Failed to fetch new auth token' })
+      }
+      return newAuthToken
+    }
+
+    authToken = secret.token
     const merchantOrderId = uuidv4().replace(/-/g, '').substring(0, 20) // Generate unique order ID
 
     const payload = {
