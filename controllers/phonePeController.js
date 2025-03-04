@@ -94,6 +94,7 @@ export const initiatePayment = asyncHandler(async (req, res) => {
         success: true,
         orderId: response.data.orderId,
         redirectUrl: response.data.redirectUrl,
+        merchantOrderId,
       })
     } else {
       throw new Error('Invalid response from PhonePe')
