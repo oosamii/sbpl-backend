@@ -30,7 +30,7 @@ export const initiatePayuPayment = asyncHandler(async (req, res) => {
       isAmountFilledByCustomer: false,
       amount,
       currency: 'INR',
-      firstName,
+      firstname: firstName,
       email,
       phone,
       txnid,
