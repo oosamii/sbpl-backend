@@ -58,6 +58,7 @@ export const getPaymentStatus = asyncHandler(async (req, res) => {
 
     const verifyData = await payuClient.verifyPayment(txnId)
     const data = verifyData.transaction_details[txnId]
+    console.log(data)
     return res.status(200).json({
       success: true,
       status: data.status,
