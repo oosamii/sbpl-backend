@@ -18,7 +18,7 @@ export const initiatePayuPayment = asyncHandler(async (req, res) => {
     const key = process.env.PAYU_KEY
     const salt = process.env.PAYU_SALT_TOKEN
 
-    const amount = 10
+    const amount = 1000
     const txnid = uuidv4().replace(/-/g, '').substring(0, 20)
     const productinfo = 'Registration Fee for SBPL'
 
@@ -39,6 +39,8 @@ export const initiatePayuPayment = asyncHandler(async (req, res) => {
       furl: `https://sbpl-tc.com/paymentprocess/failed/${txnid}`,
       hash,
     })
+
+    console.log(`Initiated Transaction for id:${txnid}`)
 
     return res.send(data)
   } catch (error) {
