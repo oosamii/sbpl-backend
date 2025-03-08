@@ -35,8 +35,8 @@ export const initiatePayuPayment = asyncHandler(async (req, res) => {
       phone,
       txnid,
       productinfo,
-      surl: `https://sbpl-tc.com/paymentprocess/${txnid}`,
-      furl: `https://sbpl-tc.com/paymentprocess/${txnid}`,
+      surl: `https://sbpl-tc.com:7860/api/payu/callback/${txnid}`,
+      furl: `https://sbpl-tc.com:7860/api/payu/callback/${txnid}`,
       hash,
     })
 
