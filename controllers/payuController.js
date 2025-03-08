@@ -66,6 +66,7 @@ export const getPaymentStatus = asyncHandler(async (req, res) => {
       method: data.mode,
       error: data.error_Message,
       createdAt: new Date(data.addedon).toLocaleString(),
+      mihpayid: data.mihpayid,
     })
   } catch (error) {
     console.log(error)
