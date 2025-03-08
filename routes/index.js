@@ -6,6 +6,7 @@ import playerRouter from './playerRouter.js'
 import razorPayRouter from './razorpayRouter.js'
 import userRouter from './userRouter.js'
 import videoRouter from './videoRouter.js'
+import blogRouter from './blogRouter.js'
 
 const appRoutes = expressRouter()
 
@@ -16,4 +17,5 @@ appRoutes.use('/influencer', influencerRouter)
 appRoutes.use('/razorpay', razorPayRouter)
 appRoutes.use('/phonepe', phonePeRouter)
 appRoutes.use('/video', videoRouter)
+appRoutes.use('/blog', blogRouter)
 export default appRoutes
