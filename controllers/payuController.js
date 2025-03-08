@@ -57,9 +57,15 @@ export const getPaymentStatus = asyncHandler(async (req, res) => {
     const { txnId } = req.params
 
     const verifyData = await payuClient.verifyPayment(txnId)
+    const data = verifyData.transaction_details[txnId]
     return res.status(200).json({
       success: true,
-      verifyData,
+      status: data.status,
+      amount: data.amt,
+      txnid: data.txnid,
+      method: data.mode,
+      error: data.error_Message,
+      createdAt: new Date(data.addedon).toLocaleString(),
     })
   } catch (error) {
     console.log(error)
