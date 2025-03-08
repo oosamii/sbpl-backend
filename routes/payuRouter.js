@@ -2,7 +2,7 @@ import express from 'express'
 import {
   getPaymentStatus,
   initiatePayuPayment,
-} from '../controllers/payuController'
+} from '../controllers/payuController.js'
 
 const payuRouter = express.Router()
 
