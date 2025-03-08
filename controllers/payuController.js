@@ -77,3 +77,20 @@ export const getPaymentStatus = asyncHandler(async (req, res) => {
     })
   }
 })
+
+export const paymentCallback = asyncHandler(async (req, res) => {
+  try {
+    const { txnId } = req.params
+    const { status, mihpayid } = req.body
+    console.log(req.body, 'Callback recieved')
+
+    console.log(
+      `Payment callback received for txnid: ${txnId}, status: ${status}`
+    )
+
+    return res.redirect(302, `https://sbpl-tc.com/paymentprocess/${txnId}`)
+  } catch (error) {
+    console.error('Error handling payment callback:', error)
+    return res.status(500).json({ success: false, error: error.message })
+  }
+})
