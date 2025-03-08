@@ -19,10 +19,10 @@ export const initiatePayuPayment = asyncHandler(async (req, res) => {
     const salt = process.env.PAYU_SALT_TOKEN
 
     const amount = 10
-    const txnId = uuidv4().replace(/-/g, '').substring(0, 20)
+    const txnid = uuidv4().replace(/-/g, '').substring(0, 20)
     const productinfo = 'Registration Fee for SBPL'
 
-    const hashString = `${key}|${txnId}|${amount}|${productinfo}|${firstName}|${email}||||||||||||${salt}`
+    const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstName}|${email}||||||||||||${salt}`
 
     const hash = crypto.createHash('sha512').update(hashString).digest('hex')
 
@@ -33,10 +33,10 @@ export const initiatePayuPayment = asyncHandler(async (req, res) => {
       firstName,
       email,
       phone,
-      txnId,
+      txnid,
       productinfo,
-      surl: `https://sbpl-tc.com/paymentprocess/success/${txnId}`,
-      furl: `https://sbpl-tc.com/paymentprocess/failed/${txnId}`,
+      surl: `https://sbpl-tc.com/paymentprocess/success/${txnid}`,
+      furl: `https://sbpl-tc.com/paymentprocess/failed/${txnid}`,
       hash,
     })
 
