@@ -104,3 +104,19 @@ export const deleteBlog = asyncHandler(async (req, res) => {
     return handleErrorResponse(res, error, 'Error while deleting Blog')
   }
 })
+
+export const getBlogById = asyncHandler(async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return res.status(404).json({ success: false, msg: "No Blogs Found" });
+    }
+
+    return res.status(200).json({ success: true, blog });
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while getting Blog')
+  }
+})

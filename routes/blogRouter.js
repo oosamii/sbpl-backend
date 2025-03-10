@@ -4,6 +4,7 @@ import {
   createBlog,
   deleteBlog,
   getAllBlogs,
+  getBlogById,
   updateBlog,
 } from '../controllers/blogController.js'
 
@@ -13,5 +14,6 @@ blogRouter.route('/create').post(createBlog)
 blogRouter.route('/getAll').get(getAllBlogs)
 blogRouter.route('/update').post(updateBlog)
 blogRouter.route('/delete/:blogId').delete(deleteBlog)
+blogRouter.route('/getBlogById/:id').get(getBlogById)
 
 export default blogRouter
