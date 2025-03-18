@@ -2,6 +2,7 @@ import expressRouter from 'express'
 import authRouter from './authRouter.js'
 import blogRouter from './blogRouter.js'
 import influencerRouter from './influencerRouter.js'
+import leadRouter from './leadRouter.js'
 import payuRouter from './payuRouter.js'
 import phonePeRouter from './phonePeRouter.js'
 import playerRouter from './playerRouter.js'
@@ -20,4 +21,5 @@ appRoutes.use('/phonepe', phonePeRouter)
 appRoutes.use('/payu', payuRouter)
 appRoutes.use('/video', videoRouter)
 appRoutes.use('/blog', blogRouter)
+appRoutes.use('/lead', leadRouter)
 export default appRoutes
