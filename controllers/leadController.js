@@ -1,4 +1,5 @@
 import asyncHandler from 'express-async-handler'
+import { paginate } from '../manager/finder.js'
 import Lead from '../schemas/leadSchema.js'
 import {
   handleErrorResponse,
