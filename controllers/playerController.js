@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import { parse } from 'json2csv'
 import { findById, findByUserId, paginate } from '../manager/finder.js'
 import Influencer from '../schemas/influencerSchema.js'
+import Lead from '../schemas/leadSchema.js'
 import Player from '../schemas/playerSchema.js'
 import User from '../schemas/userSchema.js'
 import { sendEmail } from '../utils/emailSender.js'
@@ -201,6 +202,14 @@ export const createPlayer = asyncHandler(async (req, res) => {
       )
     } catch (error) {
       console.log('Error while sending email for user', userDoc)
+    }
+
+    //delete lead from here
+    try {
+      await Lead.deleteMany({ phone })
+      await Lead.deleteMany({ email })
+    } catch (error) {
+      console.log(error, 'error while deleting leads')
     }
 
     return res.status(200).json({
