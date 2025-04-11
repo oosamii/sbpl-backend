@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import { parse } from 'json2csv'
 import { findById, findByUserId, paginate } from '../manager/finder.js'
 import Influencer from '../schemas/influencerSchema.js'
+import Player from '../schemas/playerSchema.js'
 import User from '../schemas/userSchema.js'
 import {
   handleAlreadyExists,
@@ -334,5 +335,27 @@ export const deleteInfluencer = asyncHandler(async (req, res) => {
   } catch (error) {
     console.log(error)
     return handleErrorResponse(res, error, 'Error while deleting Influencer')
+  }
+})
+
+export const getAllPlayersByInfluencer = asyncHandler(async (req, res) => {
+  try {
+    const { influencerId } = req.params
+
+    const influencer = await Influencer.findById(influencerId)
+    if (!influencer) {
+      return res
+        .status(404)
+        .json({ success: false, msg: 'Influencer not found' })
+    }
+
+    const players = await Player.find({ influencer: influencer._id }).populate(
+      'user'
+    )
+
+    return res.status(200).json({ success: true, players })
+  } catch (error) {
+    console.error('Error fetching players by influencer:', error)
+    return res.status(500).json({ success: false, error: error.message })
   }
 })

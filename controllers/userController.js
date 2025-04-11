@@ -411,7 +411,7 @@ export const verifyEmailOtp = asyncHandler(async (req, res) => {
 
 export const resetPassword = asyncHandler(async (req, res) => {
   try {
-    const { email, newPassword } = req.body
+    const { email, newPassword } = req.body;
 
     const user = await User.findOne({ email })
     if (!user) {
