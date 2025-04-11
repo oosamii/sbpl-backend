@@ -103,3 +103,36 @@ export const getAllLeads = asyncHandler(async (req, res) => {
     return handleErrorResponse(res, error, 'Error while fetching all leads')
   }
 })
+
+import fastCsv from 'fast-csv'
+import { createWriteStream } from 'fs'
+import { join } from 'path'
+import os from 'os'
+
+export const downloadCsv = asyncHandler(async (req, res) => {
+  try {
+    const leads = await Lead.find().lean()
+
+    if (!leads.length) {
+      return res.status(404).json({ success: false, message: 'No leads found' })
+    }
+
+    const tempFilePath = join(os.tmpdir(), 'leads.csv')
+    const writableStream = createWriteStream(tempFilePath)
+
+    const csvStream = fastCsv.format({ headers: true })
+    csvStream.pipe(writableStream)
+
+    leads.forEach((lead) => csvStream.write(lead))
+    csvStream.end()
+
+    writableStream.on('finish', () => {
+      res.download(tempFilePath, 'leads.csv', (err) => {
+        if (err) console.log(err)
+      })
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ success: false, message: 'Error while generating CSV' })
+  }
+})

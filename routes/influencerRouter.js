@@ -3,6 +3,7 @@ import {
   createInfluencer,
   deleteInfluencer,
   getAllInfluencers,
+  getAllPlayersByInfluencer,
   getInfluencerById,
   getInfluencerByUser,
   getInfluencersReportCSV,
@@ -26,4 +27,7 @@ influencerRouter.route('/searchInfluencers').get(searchInfluencers)
 influencerRouter.route('/downloadInfluencersCsv').get(getInfluencersReportCSV)
 influencerRouter.route('/update').post(updateInfluencer)
 influencerRouter.route('/delete/:influencerId').delete(deleteInfluencer)
+influencerRouter
+  .route('/getAllPlayersByInfluencer/:influencerId')
+  .get(getAllPlayersByInfluencer)
 export default influencerRouter

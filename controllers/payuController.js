@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import asyncHandler from 'express-async-handler'
 import Payu from 'payu-websdk'
 import { v4 as uuidv4 } from 'uuid'
+import Influencer from '../schemas/influencerSchema.js'
 
 const payuClient = new Payu(
   {
@@ -13,12 +14,22 @@ const payuClient = new Payu(
 
 export const initiatePayuPayment = asyncHandler(async (req, res) => {
   try {
-    const { firstName, email, phone } = req.body
+    const { firstName, email, phone, referralCode } = req.body
 
     const key = process.env.PAYU_KEY
     const salt = process.env.PAYU_SALT_TOKEN
 
-    const amount = 1000
+    let amount = 1000
+    let discount = 0
+
+    if (referralCode) {
+      const influencer = await Influencer.findOne({ referralCode })
+      if (influencer) {
+        discount = 50
+        amount -= discount
+      }
+    }
+
     const txnid = uuidv4().replace(/-/g, '').substring(0, 20)
     const productinfo = 'Registration Fee for SBPL'
 
