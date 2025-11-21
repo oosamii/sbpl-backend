@@ -1,6 +1,8 @@
 import expressRouter from 'express'
 import authRouter from './authRouter.js'
 import blogRouter from './blogRouter.js'
+import headerRouter from './headerRouter.js'
+import highlightRouter from './highlightRouter.js'
 import influencerRouter from './influencerRouter.js'
 import leadRouter from './leadRouter.js'
 import payuRouter from './payuRouter.js'
@@ -22,4 +24,7 @@ appRoutes.use('/payu', payuRouter)
 appRoutes.use('/video', videoRouter)
 appRoutes.use('/blog', blogRouter)
 appRoutes.use('/lead', leadRouter)
+appRoutes.use('/highlight', highlightRouter)
+appRoutes.use('/header', headerRouter)
+
 export default appRoutes
