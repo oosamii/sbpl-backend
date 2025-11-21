@@ -122,3 +122,20 @@ export const getHeaderById = asyncHandler(async (req, res) => {
     return handleErrorResponse(res, error, 'Error while getting Header')
   }
 })
+
+export const getAllNoPage = asyncHandler(async (req, res) => {
+  try {
+    const headers = await Header.find()
+    if (!headers) {
+      return res.status(404).json({ success: false, msg: 'No Headers Found' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      headers,
+    })
+  } catch (error) {
+    console.log(error)
+    return handleErrorResponse(res, error, 'Error while fetching Headers')
+  }
+})

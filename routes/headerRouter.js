@@ -4,6 +4,7 @@ import {
   createHeader,
   deleteHeader,
   getAllHeaders,
+  getAllNoPage,
   getHeaderById,
   updateHeader,
 } from '../controllers/headerController.js'
@@ -15,5 +16,6 @@ headerRouter.route('/getAll').get(getAllHeaders)
 headerRouter.route('/update').post(updateHeader)
 headerRouter.route('/delete/:headerId').delete(deleteHeader)
 headerRouter.route('/getHeaderById/:id').get(getHeaderById)
+headerRouter.route('/getAllNoPage').get(getAllNoPage)
 
 export default headerRouter
