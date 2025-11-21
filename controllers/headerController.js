@@ -1,12 +1,11 @@
-import asyncHandler from 'express-async-handler'
-import { paginate } from '../manager/finder.js'
-import Header from '../schemas/headerSchema.js'
+import asyncHandler from 'express-async-handler';
+import { paginate } from '../manager/finder.js';
+import Header from '../schemas/headerSchema.js';
 import {
-  handleAlreadyExists,
-  handleErrorResponse,
-} from '../utils/responseHandlers.js'
+  handleErrorResponse
+} from '../utils/responseHandlers.js';
 
-export const createHeader = asyncHandler(async (req, res) => {
+/* export const createHeader = asyncHandler(async (req, res) => {
   try {
     const { title, description } = req.body
 
@@ -30,7 +29,35 @@ export const createHeader = asyncHandler(async (req, res) => {
     console.log(error)
     return handleErrorResponse(res, error, 'Error while creating Header')
   }
-})
+}) */
+
+export const createHeader = asyncHandler(async (req, res) => {
+  try {
+    const { title, description } = req.body;
+
+    // Find any existing header
+    let headerDoc = await Header.findOne();
+
+    if (headerDoc) {
+      // Update existing header
+      headerDoc.title = title;
+      headerDoc.description = description;
+      await headerDoc.save();
+    } else {
+      // Create new header
+      headerDoc = await Header.create({ title, description });
+    }
+
+    return res.status(200).json({
+      success: true,
+      header: headerDoc,
+      msg: "Header Saved Successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return handleErrorResponse(res, error, "Error while saving Header");
+  }
+});
 
 export const getAllHeaders = asyncHandler(async (req, res) => {
   try {
